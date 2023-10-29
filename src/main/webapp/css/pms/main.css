@@ -1,0 +1,76 @@
+.chart, .taskList {
+	width: auto;
+	height: 300px;
+}
+
+table {
+	width: 100%;
+}
+
+.taskList {
+	width: 800px;
+}
+
+td > h2 {
+	text-align: center;
+} 
+
+.projectContent {
+	border: 1px solid silver;
+	padding: 20px;
+	letter-spacing: 2px;
+}
+
+.projectGroup {
+	margin-top: 20px;
+	color: black;
+}
+
+.groupTitle {
+	font-size: 25px;
+	vertical-align: middle;
+}
+
+.groupTitle > i {
+	width: 40px;
+	text-align: center;
+}
+
+.groupContent {
+ 	font-size: 20px;
+}
+
+/* modal css */
+.col-sm-2.col-form-label {
+	text-align: right;
+	font-size: 20px;
+}
+
+/* project title */
+.projectTitle i {
+	width: 20px;
+	text-align: center;
+}
+
+.projectHead span:first-child {
+	color: black;
+	cursor: pointer;
+	font-size: 30px;
+	line-height: 40px;	
+}
+
+.projectHead span:last-child {
+	color: blue;
+	cursor: pointer;
+	font-size: 20px;
+	text-decoration: underline;
+	float: right;
+	vertical-align: middle;	
+	line-height: 40px;
+}
+ 
+
+
+
+
+

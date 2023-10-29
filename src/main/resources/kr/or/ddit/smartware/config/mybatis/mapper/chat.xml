@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="chat">
+	<select id="getChatList" parameterType="String" resultType="hashmap">
+		select a.chat_id, a.chat_nm, a.emp_cnt, to_number(nvl(b.msg_cnt, 0)) as msg_cnt, c.msg_cont, c.msg_id, c.send_dt
+		  from (select b.chat_id, b.chat_nm, count(*) as emp_cnt
+		          from chat_emp a, (select a.*
+		                              from CHAT a, CHAT_EMP b
+		                             where a.chat_id = b.chat_id
+		                               and b.emp_id = #{emp_id}) b
+		         where a.chat_id = b.chat_id
+		         group by b.chat_id,b.chat_nm) a
+		  left outer join (select a.chat_id, count(b.msg_id) as msg_cnt
+		                     from (select a.*, b.last_msg
+		                             from CHAT a, CHAT_EMP b
+		                            where a.chat_id = b.chat_id
+		                              and b.emp_id = #{emp_id}) a
+		                     left outer join message b
+		                       on a.chat_id = b.chat_id
+		                    where to_number(substr(b.msg_id, 4, 4)) > NVL(to_number(substr(a.last_msg, 4, 4)), 0)
+		                    group by a.chat_id) b
+		    on a.chat_id = b.chat_id
+		   left outer join (select a.chat_id, a.msg_cont, 'msg'||lpad(b.msg_id,4,0) as msg_id, a.send_dt
+		                      from message a, (select chat_id, max(to_number(substr((msg_id), 4, 4))) as msg_id 
+		                                         from message
+		                                        group by chat_id) b
+		                     where to_number(substr(a.msg_id, 4, 4)) = b.msg_id) c
+		    on a.chat_id = c.chat_id
+		    order by to_number(substr(msg_id,4,4)) desc
+	</select>
+	
+	<select id="getChatNm" parameterType="String" resultType="String">
+		select chat_nm
+		  from chat
+		 where chat_id = #{chat_id}
+	</select>
+	
+	<select id="getChatEmp" parameterType="map" resultType="employee">
+		select b.*
+		  from chat_emp a, employee b
+		 where a.chat_id = #{chat_id}
+		   and a.emp_id != #{emp_id}
+		   and a.emp_id = b.emp_id
+	</select>
+	
+	<select id="getMessageList" parameterType="chatEmp" resultType="hashmap">
+		select a.*, b.emp_nm, b.emp_pic, b.rank
+		  from message a, employee b
+		 where a.chat_id = #{chat_id}
+		   and a.emp_id = b.emp_id
+		   and to_number(substr(a.msg_id, 4, 4)) > (select to_number(nvl(substr(invite_id, 4, 4),0))
+		                                              from chat_emp
+		                                             where emp_id = #{emp_id}
+		                                               and chat_id = #{chat_id})
+		   order by msg_id
+	</select>
+	
+	<insert id="insertMessage" parameterType="message">
+		INSERT INTO MESSAGE VALUES('msg' || LPAD(MESSAGE_SEQ.NEXTVAL,4,0), #{chat_id}, #{msg_cont}, #{emp_id}, SYSDATE)
+		<selectKey order="AFTER" resultType="String" keyProperty="msg_id" >
+			select 'msg' || LPAD(MESSAGE_SEQ.currval,4,0) from dual
+		</selectKey>
+	</insert>
+	
+	<insert id="insertChat" parameterType="chat">
+		insert into chat values('ch' || LPAD(CHAT_SEQ .NEXTVAL,4,0), #{chat_nm}, 'T')
+		<selectKey order="AFTER" resultType="String" keyProperty="chat_id" >
+			select 'ch' || LPAD(CHAT_SEQ.currval,4,0) from dual
+		</selectKey>
+	</insert>
+	
+	<insert id="insertChatEmp" parameterType="chatEmp">
+		insert into CHAT_EMP(emp_id, chat_id) values (#{emp_id}, #{chat_id})
+	</insert>
+	
+	<delete id="deleteChat" parameterType="chatEmp">
+		delete from chat_emp where emp_id=#{emp_id} and chat_id=#{chat_id}
+	</delete>
+	
+	<select id="getChatCnt" parameterType="String" resultType="int">
+		select count(b.emp_id) as cnt
+	  	  from chat a
+		  left outer join chat_emp b
+		    on a.chat_id = b.chat_id
+		 where a.chat_id = #{chat_id}
+		 group by a.chat_id
+	</select>
+	
+	<update id="updateChat" parameterType="String">
+		update chat set able='F' where chat_id = #{chat_id}
+	</update>
+	
+	<select id="getEmpList" parameterType="String" resultType="hashmap">
+		select emp_id, emp_nm, depart_nm, posi_nm
+		  from employee a, department b, position c
+		 where a.depart_id = b.depart_id
+		   and a.posi_id = c.posi_id
+		   and emp_nm like '%'||#{data}||'%'
+		   order by emp_nm
+	</select>
+	
+	<select id="getChatInfo" parameterType="String" resultType="employee">
+		select a.emp_id, b.emp_nm
+		  from chat_emp a, employee b
+		 where chat_id = #{data}
+		   and a.emp_id = b.emp_id
+	</select>
+	
+	<update id="updateLastMsg" parameterType="message">
+		update chat_emp set last_msg = #{msg_id} where emp_id=#{emp_id} and chat_id = #{chat_id} 
+	</update>
+	
+	<select id="getChatListCount" parameterType="message" resultType="int">
+		select distinct count(*)
+		  from message
+		 where TO_NUMBER(substr(msg_id,4,4)) > TO_NUMBER(substr(#{msg_id},4,4))
+		   and chat_id like '%'||#{chat_id}||'%'
+	</select>
+	
+	<select id="getChatTotleCnt" parameterType="String" resultType="int">
+		select nvl(sum(a.msg_cnt), 0)
+		  from (select a.chat_id, count(b.msg_id) as msg_cnt
+		          from (select a.*, b.last_msg
+		                  from CHAT a, CHAT_EMP b
+		                 where a.chat_id = b.chat_id
+		                   and b.emp_id = #{data}) a
+		          left outer join message b
+		            on a.chat_id = b.chat_id
+		         where to_number(substr(b.msg_id, 4, 4)) > NVL(to_number(substr(a.last_msg, 4, 4)), 0)
+		         group by a.chat_id) a
+	</select>
+	
+	<select id="getLastMsg" parameterType="String" resultType="String">
+		select 'msg'||lpad(max(to_number(substr(msg_id, 4, 4))),4,0) as msg_id from message where chat_id = #{chat_id}
+	</select>
+	
+	<update id="updateInviteId" parameterType="message">
+		update chat_emp set last_msg=#{msg_id}, invite_id=#{msg_id} where emp_id=#{emp_id} and chat_id = #{chat_id}
+	</update>
+	
+	<select id="getChatEmpList" parameterType="map" resultType="hashmap">
+		select emp_id, emp_nm, depart_nm, posi_nm
+		  from employee a, department b, position c
+		 where a.depart_id = b.depart_id
+		   and a.posi_id = c.posi_id
+		   and emp_nm like '%'||#{emp_nm}||'%'
+		   and emp_id not in (select emp_id
+		                  from chat_emp a
+		                 where a.chat_id = #{chat_id})
+		   order by emp_nm
+	</select>
+</mapper>

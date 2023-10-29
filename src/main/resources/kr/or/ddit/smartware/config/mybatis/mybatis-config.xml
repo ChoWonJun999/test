@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	
+	<typeAliases>
+		<typeAlias alias="employee" 	type="kr.or.ddit.smartware.employee.model.Employee"/>
+		<typeAlias alias="calendar" 	type="kr.or.ddit.smartware.calendar.model.Calendar"/>
+		<typeAlias alias="category" 	type="kr.or.ddit.smartware.calendar.model.Category"/>
+		
+		<!-- <typeAlias alias="position" 	type="kr.or.ddit.smartware.employee.model.Position"/>
+		<typeAlias alias="department" 	type="kr.or.ddit.smartware.employee.model.Department"/>
+		<typeAlias alias="job" 			type="kr.or.ddit.smartware.employee.model.Job"/>
+		<typeAlias alias="chat"  		type="kr.or.ddit.smartware.messenger.model.Chat"/>
+		<typeAlias alias="chatEmp"  	type="kr.or.ddit.smartware.messenger.model.ChatEmp"/>
+		<typeAlias alias="message"  	type="kr.or.ddit.smartware.messenger.model.Message"/>
+		<typeAlias alias="board"  		type="kr.or.ddit.smartware.board.model.Board"/>
+		<typeAlias alias="post"  		type="kr.or.ddit.smartware.post.model.Post"/>
+		<typeAlias alias="comments" 	type="kr.or.ddit.smartware.post.model.Comments"/>
+		<typeAlias alias="postfile" 	type="kr.or.ddit.smartware.post.model.PostFile"/>
+		<typeAlias alias="email" 		type="kr.or.ddit.smartware.email.model.Email"/>
+		<typeAlias alias="form"			type="kr.or.ddit.smartware.approval.model.Form"/>
+		<typeAlias alias="apprMember" 	type="kr.or.ddit.smartware.approval.model.ApprMember"/>
+		<typeAlias alias="applAppr" 	type="kr.or.ddit.smartware.approval.model.ApplAppr"/>
+		<typeAlias alias="application" 	type="kr.or.ddit.smartware.approval.model.Application"/>
+		<typeAlias alias="popup" 		type="kr.or.ddit.smartware.popup.model.Popup"/>
+		<typeAlias alias="project" 		type="kr.or.ddit.smartware.pms.model.Project"/>
+		<typeAlias alias="task" 		type="kr.or.ddit.smartware.pms.model.Task"/>
+		<typeAlias alias="proTask" 		type="kr.or.ddit.smartware.pms.model.ProTask"/>
+		<typeAlias alias="taskHistory"	type="kr.or.ddit.smartware.pms.model.TaskHistory"/> -->
+	</typeAliases>
+	
+	<mappers>
+		<mapper resource="kr/or/ddit/smartware/config/mybatis/mapper/employee.xml"/>
+				<mapper resource="kr/or/ddit/smartware/config/mybatis/mapper/calendar.xml"/>
+		<mapper resource="kr/or/ddit/smartware/config/mybatis/mapper/category.xml"/>
+		
+<!-- 		<mapper resource="kr/or/ddit/smartware/config/mybatis/mapper/department.xml"/> -->
+<!-- 		<mapper resource="kr/or/ddit/smartware/config/mybatis/mapper/position.xml"/> -->
+<!-- 		<mapper resource="kr/or/ddit/smartware/config/mybatis/mapper/chat.xml"/> -->
+<!-- 		<mapper resource="kr/or/ddit/smartware/config/mybatis/mapper/board.xml"/> -->
+<!-- 		<mapper resource="kr/or/ddit/smartware/config/mybatis/mapper/post.xml"/> -->
+<!-- 		<mapper resource="kr/or/ddit/smartware/config/mybatis/mapper/comments.xml"/> -->
+<!-- 		<mapper resource="kr/or/ddit/smartware/config/mybatis/mapper/postfile.xml"/> -->
+
+<!-- 		<mapper resource="kr/or/ddit/smartware/config/mybatis/mapper/email.xml"/> -->
+<!-- 		<mapper resource="kr/or/ddit/smartware/config/mybatis/mapper/position.xml"/> -->
+<!-- 		<mapper resource="kr/or/ddit/smartware/config/mybatis/mapper/department.xml"/> -->
+<!-- 		<mapper resource="kr/or/ddit/smartware/config/mybatis/mapper/form.xml"/> -->
+<!-- 		<mapper resource="kr/or/ddit/smartware/config/mybatis/mapper/batch.xml"/> -->
+<!-- 		<mapper resource="kr/or/ddit/smartware/config/mybatis/mapper/popup.xml"/> -->
+<!-- 		<mapper resource="kr/or/ddit/smartware/config/mybatis/mapper/approval.xml"/> -->
+<!-- 		<mapper resource="kr/or/ddit/smartware/config/mybatis/mapper/job.xml"/> -->
+<!-- 		<mapper resource="kr/or/ddit/smartware/config/mybatis/mapper/project.xml"/> -->
+<!-- 		<mapper resource="kr/or/ddit/smartware/config/mybatis/mapper/task.xml"/> -->
+
+	</mappers>
+	
+</configuration>

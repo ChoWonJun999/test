@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="comments">
+	<select id="getCommentsList" parameterType="string" resultType="comments">
+		select * from comments where post_id = #{data}
+		order by com_id
+	</select>
+	
+	<insert id="insertComments" parameterType="comments">
+	<selectKey keyProperty="com_id" resultType="String" order="BEFORE">
+		select 'com' || lpad(comments_seq.nextval,4,0) com_id from dual
+	</selectKey>
+		insert into comments (com_id, cont, reg_dt, post_id, emp_id, able)
+   			values(#{com_id}, #{cont}, sysdate, #{post_id}, #{emp_id}, 'F')
+	</insert>
+	
+	<update id="deleteComments" parameterType="string">
+		update comments set able = 'T' where com_id=#{com_id}
+	</update>
+</mapper>
