@@ -81,7 +81,7 @@ public interface ICalendarService {
 	* 변경이력 :
 	* Method 설명 : 모든 예약 일정을 가져온다.
 	*/
-	List<Calendar> getAllCrawlingCalendarList();
+	List<Calendar> getAllCrawlingCalendarList(Calendar calendar);
 	
 	/**
 	* Method : getRoomList

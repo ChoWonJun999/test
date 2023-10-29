@@ -93,7 +93,7 @@ public interface ICalendarDao {
 	* @return
 	* Method 설명 :  모든 예약 일정을 가져온다.
 	*/
-	List<Calendar> getAllCrawlingCalendarList();
+	List<Calendar> getAllCrawlingCalendarList(Calendar calendar);
 	
 	
 	

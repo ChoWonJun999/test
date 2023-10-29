@@ -18,7 +18,7 @@ $(function() {
 		eventLimit : true, // allow "more" link when too many events
 		eventSources: [{ // 이벤트(일정) 추가
 			events: function(info, successCallback, failureCallback) {
-				$.ajax({
+				/*$.ajax({
 					url: cp + "/getAllCrawlingCalendarList",
 					type: "GET",
 					dataType: "json",
@@ -32,7 +32,57 @@ $(function() {
 						})
 						successCallback(fixedData);
 					}
-				});
+				});*/
+				
+				
+				// 1. fc-center 요소의 텍스트를 가져옵니다.
+			    var text = $('.fc-center h2').text();
+			    console.log("text: "+ text);
+			    
+			    
+			    if (!text) {
+			        // 현재 날짜 가져오기
+			        var currentDate = new Date();
+
+			        // 현재 연도와 월 가져오기
+			        var year = currentDate.getFullYear();
+			        var month = currentDate.getMonth() + 1; // getMonth()는 0부터 시작하므로 1을 더해줍니다.
+
+			        // 월이 한 자리 수이면 앞에 0을 붙여줍니다.
+			        if (month < 10) {
+			            month = '0' + month;
+			        }
+
+			        // yyyy-mm-01 형식의 문자열 생성
+			        var formattedDate = year + '-' + month + '-01';
+			        console.log("Current Date: " + formattedDate);
+			    } else {
+			    	// 2. 텍스트를 Date 객체로 변환합니다.
+				    var date = moment(text, 'YYYY년 M월').toDate();
+				    
+				    // 3. 날짜를 yyyy-mm-01 형식의 문자열로 포맷합니다.
+				    var formattedDate = moment(date).format('YYYY-MM-01');
+			    }
+				
+				
+				$.ajax({
+			          url: cp + "/getAllCrawlingCalendarList",
+			          type: "GET",
+			          dataType: "json",
+			          data: {
+			        	bApcoCheckInDate: formattedDate
+			          },
+			          success: function(data) {
+			            var fixedData = data.calendarList.map(function(array) {
+			              if (array.allDay && array.start !== array.end) {
+			                array.end = new Date(moment(array.end).add(1, 'days'));
+			              }
+			              return array;
+			            })
+			            successCallback(fixedData);
+			          },
+			          error: failureCallback
+			        });
 			}
 		}],
 		
@@ -92,7 +142,18 @@ $(function() {
 		}
     });
     calendar.render();
-
+    
+    // 'prev', 'next', 'today' 버튼 클릭 이벤트 핸들러 추가
+    document.querySelector('.fc-prev-button').addEventListener('click', function() {
+      calendar.refetchEvents();
+    });
+    document.querySelector('.fc-next-button').addEventListener('click', function() {
+      calendar.refetchEvents();
+    });
+    document.querySelector('.fc-today-button').addEventListener('click', function() {
+      calendar.refetchEvents();
+    });
+   
 	// 개인 일정 카테고리 불러오기
 	$.getJSON(cp + "/getEmpCategoryList").done(function(data) {
 		getDisplayCategory(data.categoryList, $("#empCategory"), "emp");

@@ -315,17 +315,23 @@ public class CalendarController {
 	* Method 설명 : 현재 로그인한 사원의 모든 일정을 JSON형태로 반환한다.
 	*/
 	@RequestMapping("getAllCrawlingCalendarList")
-	public View getAllCrawlingCalendarList(Model model, HttpSession session) {
+	public View getAllCrawlingCalendarList(Model model, HttpSession session, Calendar pCalendar) {
 		Employee employee = (Employee) session.getAttribute("S_EMPLOYEE");
 		String emp_id = employee.getEmp_id();
 		
+		if (pCalendar.getbApcoCheckInDate() == null || pCalendar.getbApcoCheckInDate() == null) {
+		
+			LocalDate now = LocalDate.now();
+	        LocalDate firstDayOfMonth = now.withDayOfMonth(1);
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	        
+		    pCalendar.setbApcoCheckInDate(firstDayOfMonth.format(formatter));
+		}
 		List<Map<String, Object>> calendarList = new ArrayList<Map<String, Object>>();
 		
-		for(Calendar calendar : calendarService.getAllCrawlingCalendarList()) {
+		for(Calendar calendar : calendarService.getAllCrawlingCalendarList(pCalendar)) {
 			calendarList.add(calendarJson(calendar));
 		}
-		
-		model.addAttribute("calendarList", calendarList);
 		
 		return jsonView;
 	}

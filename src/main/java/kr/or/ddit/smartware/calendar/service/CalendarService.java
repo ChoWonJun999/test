@@ -109,8 +109,8 @@ public class CalendarService implements ICalendarService{
 
 	
 	@Override
-	public List<Calendar> getAllCrawlingCalendarList() {
-		return calendarDao.getAllCrawlingCalendarList();
+	public List<Calendar> getAllCrawlingCalendarList(Calendar calendar) {
+		return calendarDao.getAllCrawlingCalendarList(calendar);
 	}
 
 	

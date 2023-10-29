@@ -120,8 +120,8 @@ public class CalendarDao implements ICalendarDao {
 	}
 
 	@Override
-	public List<Calendar> getAllCrawlingCalendarList() {
-		return sqlSession.selectList("calendar.getAllCrawlingCalendarList");
+	public List<Calendar> getAllCrawlingCalendarList(Calendar calendar) {
+		return sqlSession.selectList("calendar.getAllCrawlingCalendarList", calendar);
 	}
 
 	/**

@@ -133,7 +133,7 @@
 	</select>
 	
 	
-	<select id="getAllCrawlingCalendarList" resultType="calendar">
+	<select id="getAllCrawlingCalendarList" parameterType="calendar" resultType="calendar">
 			SELECT
 			    b_apco_key            AS bApcoKey,
 			    b_apco_channel        AS bApcoChannel,
@@ -157,7 +157,9 @@
 			FROM
 			    b_apco
 			WHERE
-			    b_apco_boo_date BETWEEN DATE_SUB(NOW(), INTERVAL 6 MONTH) AND DATE_ADD(NOW(), INTERVAL 6 MONTH)
+			     b_apco_check_in_date BETWEEN
+			     DATE_SUB(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d'), INTERVAL DAYOFWEEK(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d')) - 1 DAY) AND
+			     DATE_ADD(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d')), INTERVAL 7 - DAYOFWEEK(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d'))) DAY)
 			
 		UNION ALL
 			
@@ -184,7 +186,9 @@
 			FROM
 			    b_com
 			WHERE
-			    b_com_boo_date BETWEEN DATE_SUB(NOW(), INTERVAL 6 MONTH) AND DATE_ADD(NOW(), INTERVAL 6 MONTH)
+			     b_com_check_in_date BETWEEN
+			     DATE_SUB(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d'), INTERVAL DAYOFWEEK(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d')) - 1 DAY) AND
+			     DATE_ADD(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d')), INTERVAL 7 - DAYOFWEEK(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d'))) DAY)
 			    
 	    UNION ALL
 			
@@ -212,7 +216,9 @@
 			FROM
 			    b_temp
 			WHERE
-			    b_temp_boo_date BETWEEN DATE_SUB(NOW(), INTERVAL 6 MONTH) AND DATE_ADD(NOW(), INTERVAL 6 MONTH)
+			     b_temp_check_in_date BETWEEN
+			     DATE_SUB(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d'), INTERVAL DAYOFWEEK(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d')) - 1 DAY) AND
+			     DATE_ADD(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d')), INTERVAL 7 - DAYOFWEEK(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d'))) DAY)
 			    
 	    UNION ALL
 			
@@ -239,7 +245,9 @@
 			FROM
 			    b_cash
 			WHERE
-			    b_cash_boo_date BETWEEN DATE_SUB(NOW(), INTERVAL 6 MONTH) AND DATE_ADD(NOW(), INTERVAL 6 MONTH)
+			    b_cash_check_in_date BETWEEN
+			     DATE_SUB(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d'), INTERVAL DAYOFWEEK(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d')) - 1 DAY) AND
+			     DATE_ADD(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d')), INTERVAL 7 - DAYOFWEEK(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d'))) DAY)
 
 	</select>
 	
