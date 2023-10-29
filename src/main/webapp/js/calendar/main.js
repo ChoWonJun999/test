@@ -37,8 +37,7 @@ $(function() {
 				
 				// 1. fc-center 요소의 텍스트를 가져옵니다.
 			    var text = $('.fc-center h2').text();
-			    console.log("text: "+ text);
-			    
+			    var formattedDate = "";
 			    
 			    if (!text) {
 			        // 현재 날짜 가져오기
@@ -54,16 +53,14 @@ $(function() {
 			        }
 
 			        // yyyy-mm-01 형식의 문자열 생성
-			        var formattedDate = year + '-' + month + '-01';
-			        console.log("Current Date: " + formattedDate);
+			        formattedDate = year + '-' + month + '-01';
 			    } else {
 			    	// 2. 텍스트를 Date 객체로 변환합니다.
 				    var date = moment(text, 'YYYY년 M월').toDate();
 				    
 				    // 3. 날짜를 yyyy-mm-01 형식의 문자열로 포맷합니다.
-				    var formattedDate = moment(date).format('YYYY-MM-01');
+				    formattedDate = moment(date).format('YYYY-MM-01');
 			    }
-				
 				
 				$.ajax({
 			          url: cp + "/getAllCrawlingCalendarList",

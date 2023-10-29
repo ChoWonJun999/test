@@ -333,6 +333,10 @@ public class CalendarController {
 			calendarList.add(calendarJson(calendar));
 		}
 		
+		
+		model.addAttribute("calendarList", calendarList);
+
+		
 		return jsonView;
 	}
 	
