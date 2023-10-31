@@ -17,6 +17,11 @@
 <!-- 현재 페이지의 css -->
 <link href= "${cp }/css/calendar/calendar.css" rel="stylesheet" />
 
+<style>
+
+</style>
+
+
 <!-- body 시작 -->
 <div class="row" style='user-select:none;'>
 	<!-- filter -->
@@ -151,7 +156,7 @@
                 		<div class="form-group row">
 		                    <label class="col-sm-3 col-form-label">예약자</label>
 		                    <div class="col-sm-9">
-		                    	<input type="text" class="form-control" id="bApcoName" name="bApcoName">
+		                    	<input type="text" class="form-control" id="bApcoName" name="bApcoName" maxlength="50">
 		                    	<input type="hidden" class="form-control" id="bApcoStatus" name="bApcoStatus" value="확정">
 		                    	<input type="hidden" class="form-control" id="gubun" name="gubun" >
 		                    </div>
@@ -167,21 +172,21 @@
 	                     <div class="form-group row">
 		                    <label class="col-sm-3 col-form-label">인원수</label>
 		                    <div class="col-sm-9">
-		                    	<input type="text" class="form-control" id="bApcoPerson" name="bApcoPerson">
+		                    	<input type="text" class="form-control" id="bApcoPerson" name="bApcoPerson" oninput="formatInput(this)" maxlength="50">
 		                    </div>
 	                    </div>
 	                    
 	                    <div class="form-group row">
 		                    <label class="col-sm-3 col-form-label">핸드폰 번호</label>
 		                    <div class="col-sm-9">
-		                    	<input type="text" class="form-control" id="bApcoHp" name="bApcoHp">
+		                    	<input type="text" class="form-control" id="bApcoHp" name="bApcoHp" maxlength="50">
 		                    </div>
 	                    </div>
 	                    
 	                    <div class="form-group row">
 		                    <label class="col-sm-3 col-form-label">가격</label>
 		                    <div class="col-sm-9">
-		                    	<input type="text" class="form-control" id="bApcoPayment" name="bApcoPayment">
+		                    	<input type="text" class="form-control" id="bApcoPayment" name="bApcoPayment" oninput="formatInput(this)" maxlength="50">
 		                    </div>
 	                    </div>
 	                    
@@ -189,7 +194,7 @@
 		                    <label class="col-sm-3 col-form-label">날짜</label>
 		                    <div class="col-sm-4">
 								<div class="form-control tui-datepicker-input tui-datetime-input tui-has-focus">
-									<input id="startpicker-input" type="text" aria-label="Date">
+									<input id="startpicker-input" type="text" aria-label="Date" readonly="readonly">
 									<span class="tui-ico-date"></span>
 									<div id="startpicker-container" style="margin-left: -1px;"></div>
 								</div>
@@ -197,7 +202,7 @@
 							<span>~</span>
 		                    <div class="col-sm-4">
 								<div class="form-control tui-datepicker-input tui-datetime-input tui-has-focus">
-									<input id="endpicker-input" type="text" aria-label="Date">
+									<input id="endpicker-input" type="text" aria-label="Date" readonly="readonly">
 									<span class="tui-ico-date"></span>
 									<div id="endpicker-container" style="margin-left: -1px;"></div>
 								</div>

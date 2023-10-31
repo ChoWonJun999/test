@@ -1,6 +1,7 @@
 package kr.or.ddit.smartware.calendar.repository;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -154,6 +155,18 @@ public class CalendarDao implements ICalendarDao {
 	@Override
 	public List<Calendar> getAllExcelList(Calendar calendar) {
 		return sqlSession.selectList("calendar.getAllExcelList", calendar);
+	}
+
+	
+	@Override
+	public int isBapcoNumExist(String bApcoNum) {
+		return sqlSession.selectOne("calendar.isBapcoNumExist", bApcoNum);
+	}
+
+	
+	@Override
+	public int checkAvailability(Map<String, String> map) {
+		return sqlSession.selectOne("calendar.checkAvailability", map);
 	}
 
 }

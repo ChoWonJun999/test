@@ -1,6 +1,7 @@
 package kr.or.ddit.smartware.calendar.service;
 
 import java.util.List;
+import java.util.Map;
 
 import kr.or.ddit.smartware.calendar.model.Calendar;
 
@@ -127,5 +128,13 @@ public interface ICalendarService {
 	* Method 설명 :  모든 excel 예약 일정을 가져온다.
 	*/
 	List<Calendar> getAllExcelList(Calendar calendar);
+	
+	
+	/**
+	 *  cash 에 해당 예약번호가 있는지 check
+	 */
+	boolean isBapcoNumExist(String bApcoNum);
+	
+	int checkAvailability(Map<String, String> map);
 
 }

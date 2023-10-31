@@ -131,3 +131,7 @@ button:focus {
 .fc-event {
   cursor: pointer !important;
 }
+
+.tui-timepicker {
+    display: none !important;
+}

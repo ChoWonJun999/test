@@ -264,27 +264,28 @@
 	
 	
 	<insert id="insertNewCalendar" parameterType="calendar">
-		<!--  insert into b_apco
+		insert into b_cash
 		(
-			b_apco_channel
-			, b_apco_status
-			, b_apco_num
-			, b_apco_room
-			, b_apco_check_in_date
-			, b_apco_check_out_date
-			, b_apco_name
-			, b_apco_person
-			, b_apco_barbecue
-			, b_apco_payment
-			, b_apco_hp
-			, b_apco_etc
-			, b_apco_boo_date
+			b_cash_channel
+			, b_cash_status
+			, b_cash_num
+			, b_cash_room
+			, b_cash_check_in_date
+			, b_cash_check_out_date
+			, b_cash_name
+			, b_cash_person
+			, b_cash_barbecue
+			, b_cash_payment
+			, b_cash_hp
+			, b_cash_etc
+			, b_cash_boo_date
+			, b_cash_boo_time
 		)
 		values
 		(
 			#{category_id}
 			, #{bApcoStatus}
-			, '-'
+			, #{bApcoNum}
 			, #{room_id}
 			, #{st_dt}
 			, #{end_dt}
@@ -294,40 +295,8 @@
 			, #{bApcoPayment}
 			, #{bApcoHp}
 			, #{bApcoEtc}
-			, #{st_dt}
-		) -->
-		
-		insert into b_temp
-		(
-			b_temp_channel
-			, b_temp_status
-			, b_temp_num
-			, b_temp_room
-			, b_temp_check_in_date
-			, b_temp_check_out_date
-			, b_temp_name
-			, b_temp_person
-			, b_temp_barbecue
-			, b_temp_payment
-			, b_temp_hp
-			, b_temp_etc
-			, b_temp_boo_date
-		)
-		values
-		(
-			#{category_id}
-			, #{bApcoStatus}
-			, '-'
-			, #{room_id}
-			, #{st_dt}
-			, #{end_dt}
-			, #{bApcoName}
-			, #{bApcoPerson}
-			, '-'
-			, #{bApcoPayment}
-			, #{bApcoHp}
-			, #{bApcoEtc}
-			, #{st_dt}
+			, CURDATE()
+			, CURTIME()
 		) 
 	</insert>
 	
@@ -537,6 +506,54 @@
 	</select>
 	
 	
+	<select id="isBapcoNumExist" parameterType="string" resultType="int">
+	    SELECT COUNT(*)
+	    FROM b_cash
+	    WHERE b_cash_num = #{bApcoNum}
+	</select>
+		
+	
+	<select id="checkAvailability" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+		FROM (
+		    SELECT 1 FROM b_cash
+			WHERE 1=1
+			AND b_cash_room = #{room_id}
+			AND (
+			<![CDATA[
+				(b_cash_check_in_date <= #{startDate} AND b_cash_check_out_date > #{startDate})
+				OR (b_cash_check_in_date < #{endDate} AND b_cash_check_out_date >= #{endDate})
+				OR (b_cash_check_in_date >= #{startDate} AND b_cash_check_out_date <= #{endDate})
+			]]>
+			)
+		    
+		    UNION ALL
+		    
+		    SELECT 1 FROM b_com
+			WHERE 1=1
+			AND b_com_room = #{room_id}
+			AND (
+			<![CDATA[
+				(b_com_check_in_date <= #{startDate} AND b_com_check_out_date > #{startDate})
+				OR (b_com_check_in_date < #{endDate} AND b_com_check_out_date >= #{endDate})
+				OR (b_com_check_in_date >= #{startDate} AND b_com_check_out_date <= #{endDate})
+			]]>
+			)
+		    
+		    UNION ALL
+		    
+		    SELECT 1 FROM b_apco
+			WHERE 1=1
+			AND b_apco_room = #{room_id}
+			AND (
+			<![CDATA[
+				(b_apco_check_in_date <= #{startDate} AND b_apco_check_out_date > #{startDate})
+				OR (b_apco_check_in_date < #{endDate} AND b_apco_check_out_date >= #{endDate})
+				OR (b_apco_check_in_date >= #{startDate} AND b_apco_check_out_date <= #{endDate})
+			]]>
+			)
+		) AS availability_check
+    </select>
 	
 	
 	

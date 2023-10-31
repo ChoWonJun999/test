@@ -71,9 +71,9 @@ $(function() {
 			          },
 			          success: function(data) {
 			            var fixedData = data.calendarList.map(function(array) {
-			              if (array.allDay && array.start !== array.end) {
+			             /* if (array.allDay && array.start !== array.end) {
 			                array.end = new Date(moment(array.end).add(1, 'days'));
-			              }
+			              }*/
 			              return array;
 			            })
 			            successCallback(fixedData);
@@ -229,7 +229,7 @@ function getDisplayCategory(data, loc, type) {
 	});
 	
 	// 카테고리 추가 버튼 출력
-	if(type === "emp") {
+	/*if(type === "emp") {
 		res += "<hr>";
 		res += "<span id='addEmpCategory'>";
 		res += "<i class='fa fa-lg fa-plus-circle' style='width: 20px;'></i>";
@@ -241,7 +241,7 @@ function getDisplayCategory(data, loc, type) {
 			res += "<i class='fa fa-lg fa-plus-circle' style='width: 20px;'></i>";
 			res += "<span data-toggle='modal' data-target='#categoryModal'> 새로운 카테고리</span>";
 		}
-	} 
+	} */
 	
 	// 위에서 저장한 HTML태그를 document에 출력
 	loc.append(res);
@@ -270,11 +270,11 @@ function getDisplayDate(event) {
 			displayDate = startDate.format("YYYY-MM-DD") + " ~ " + endDate.format("YYYY-MM-DD");
 	} else { // allDay === false
 		if(startDate.format("YYYYMMDDHHmm") === endDate.format("YYYYMMDDHHmm")) // 하루 안에서 같은 시간일 때(start = end)
-			displayDate = startDate.format("YYYY-MM-DD HH:mm");
+			displayDate = startDate.format("YYYY-MM-DD");
 		else if(startDate.format("YYYYMMDDHHmm") === endDate.format("YYYYMMDDHHmm")) // 하루 안에서 다른 시간일 때
-			displayDate = startDate.format("YYYY-MM-DD HH:mm") + " ~ " + endDate.format("HH:mm");
+			displayDate = startDate.format("YYYY-MM-DD") + " ~ " + endDate.format("YYYY-MM-DD");
 		else // 이틀 이상 범위일 때
-			displayDate = startDate.format("YYYY-MM-DD HH:mm") + " ~ " + endDate.format("YYYY-MM-DD HH:mm");
+			displayDate = startDate.format("YYYY-MM-DD") + " ~ " + endDate.format("YYYY-MM-DD");
 	}
 
 	return displayDate;
@@ -325,11 +325,32 @@ function rgb2hex(rgb) {
      }
 }
 
+
+function formatInput(inputElement) {
+    var numbersOnly = inputElement.value.replace(/[^0-9]/g, '');
+    inputElement.value = addCommas(numbersOnly);
+}
+
+function addCommas(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+
+function uncomma(str) {
+    return str.replace(/,/g, '');
+}
+
+function settingDate(obj){
+	
+	console.log(obj);
+	
+}
+
 // 컬러셀렉터 표시
 $("#colorselector").colorselector();
 
 // tui.date-picker
-var picker = tui.DatePicker.createRangePicker({
+/*var picker = tui.DatePicker.createRangePicker({
 	language: 'ko',
     startpicker: {
         date: new Date(),
@@ -342,9 +363,37 @@ var picker = tui.DatePicker.createRangePicker({
         container: '#endpicker-container'
     },
     type: 'date',
-    format: 'yyyy-MM-dd HH:mm',
+//    format: 'yyyy-MM-dd HH:mm',
+    format: 'yyyy-MM-dd',
     timepicker: {
     	language: 'ko',
     	showMeridiem: false
     }
+});*/
+
+var picker = tui.DatePicker.createRangePicker({
+    language: 'ko',
+    startpicker: {
+        date: new Date(),
+        input: '#startpicker-input',
+        container: '#startpicker-container'
+    },
+    endpicker: {
+        date: new Date(),
+        input: '#endpicker-input',
+        container: '#endpicker-container'
+    },
+    type: 'date',
+    format: 'yyyy-MM-dd',
+    onChange: function() {
+        var startDate = picker.getStartDate();
+        var endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 1);
+        picker.setEndDate(endDate);
+    }
 });
+
+
+
+
+

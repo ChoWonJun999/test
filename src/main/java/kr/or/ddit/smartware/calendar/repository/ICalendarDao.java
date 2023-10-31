@@ -1,10 +1,15 @@
 package kr.or.ddit.smartware.calendar.repository;
 
 import java.util.List;
+import java.util.Map;
 
 import kr.or.ddit.smartware.calendar.model.Calendar;
 import kr.or.ddit.smartware.calendar.model.Category;
 
+/**
+ * @author kdh
+ *
+ */
 public interface ICalendarDao {
 
 	/**
@@ -144,6 +149,13 @@ public interface ICalendarDao {
 	List<Calendar> getAllExcelList(Calendar calendar);
 	
 	
+	
+	/**
+	 *  cash 에 해당 예약번호가 있는지 check
+	 */
+	int isBapcoNumExist(String bApcoNum);
+	
+	int checkAvailability(Map<String, String> map);
 	
 	
 
