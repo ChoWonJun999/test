@@ -7,555 +7,682 @@
 	<!-- cal_id에 해당하는 일정 반환 -->
 	<select id="getCalendar" parameterType="String" resultType="calendar">
 		select *
-		  from calendar
-		 where cal_id = #{cal_id}
+		from calendar
+		where cal_id = #{cal_id}
 	</select>
 
 	<!-- 사원의 모든 일정 리스트를 반환 -->
-	<select id="getAllCalendarList" parameterType="String" resultType="calendar">
+	<select id="getAllCalendarList" parameterType="String"
+		resultType="calendar">
 		select *
-		  from calendar
-		 where depart_id is null
-		   and emp_id = #{emp_id}
-           and category_id in (select category_id
-                                from category
-                               where pro_id is null)
-          UNION ALL
+		from calendar
+		where depart_id is null
+		and emp_id = #{emp_id}
+		and category_id in (select category_id
+		from category
+		where pro_id is null)
+		UNION ALL
 		select *
-  		  from calendar
-   		 where depart_id = (select depart_id 
-         		              from employee
-                     		 where emp_id = #{emp_id})
-         UNION ALL
-        select *
-          from calendar
-         where category_id in (select category_id
-                                 from category
-                                where pro_id in (select pro_id
-                                                   from pro_position
-                                                  where emp_id = #{emp_id}))
-		   and emp_id = #{emp_id}
+		from calendar
+		where depart_id = (select depart_id
+		from employee
+		where emp_id = #{emp_id})
+		UNION ALL
+		select *
+		from calendar
+		where category_id in (select category_id
+		from category
+		where pro_id in (select pro_id
+		from pro_position
+		where emp_id = #{emp_id}))
+		and emp_id = #{emp_id}
 	</select>
-	
+
 	<!-- 일정 추가 -->
 	<insert id="insertCalendar" parameterType="calendar">
-		insert into calendar(cal_id, cal_title, cal_cont, st_dt, end_dt, allDay, depart_id, emp_id, category_id)
-			values('cal' || lpad(calendar_seq.nextval, 4, 0), #{cal_title}, #{cal_cont, jdbcType=VARCHAR},
-					#{st_dt}, #{end_dt}, #{allDay}, #{depart_id, jdbcType=VARCHAR}, #{emp_id, jdbcType=VARCHAR}, #{category_id})
-		<selectKey order="AFTER" resultType="String" keyProperty="cal_id" >
+		insert into calendar(cal_id, cal_title, cal_cont, st_dt, end_dt,
+		allDay, depart_id, emp_id, category_id)
+		values('cal' || lpad(calendar_seq.nextval, 4, 0), #{cal_title}, #{cal_cont,
+		jdbcType=VARCHAR},
+		#{st_dt}, #{end_dt}, #{allDay}, #{depart_id, jdbcType=VARCHAR}, #{emp_id,
+		jdbcType=VARCHAR}, #{category_id})
+		<selectKey order="AFTER" resultType="String" keyProperty="cal_id">
 			select 'cal' || lpad(calendar_seq.currval, 4, 0) from dual
 		</selectKey>
 	</insert>
-	
+
 	<!-- 일정 수정 -->
 	<update id="updateCalendar" parameterType="calendar">
 		update calendar
-		   set cal_title = #{cal_title},
-		   	   cal_cont = #{cal_cont, jdbcType=VARCHAR},
-		   	   st_dt = #{st_dt},
-		   	   end_dt = #{end_dt},
-		   	   allDay = #{allDay},
-		   	   depart_id = #{depart_id, jdbcType=VARCHAR},
-		   	   emp_id = #{emp_id},
-		   	   category_id = #{category_id}
-		 where cal_id = #{cal_id}
+		set cal_title = #{cal_title},
+		cal_cont = #{cal_cont, jdbcType=VARCHAR},
+		st_dt = #{st_dt},
+		end_dt = #{end_dt},
+		allDay = #{allDay},
+		depart_id = #{depart_id, jdbcType=VARCHAR},
+		emp_id = #{emp_id},
+		category_id = #{category_id}
+		where cal_id = #{cal_id}
 	</update>
-	
+
 	<!-- 일정 삭제 -->
 	<delete id="deleteCalendar" parameterType="String">
 		delete from calendar
-		 where cal_id = #{cal_id}
+		where cal_id = #{cal_id}
 	</delete>
-	
+
 	<!-- 카테고리의 모든 일정 삭제 -->
 	<delete id="deleteCateCalendar" parameterType="String">
-		delete from calendar
-		 where category_id = #{category_id}
+		delete from
+		calendar
+		where category_id = #{category_id}
 	</delete>
-	
+
 	<!-- emp_id에 해당하는 사원의 오늘 일정 내용 조회 -->
 	<select id="getTodayCalendar" parameterType="String" resultType="calendar">
 		select *
-		  from         (select *
-                          from calendar
-                         where depart_id is null
-                           and emp_id = #{emp_id}
-                           and category_id in (select category_id
-                                                from category
-                                               where pro_id is null)
-                          UNION ALL
-                        select *
-                          from calendar
-                         where depart_id = (select depart_id 
-                                              from employee
-                                             where emp_id = #{emp_id})
-                         UNION ALL
-                        select *
-                          from calendar
-                         where category_id in (select category_id
-                                                 from category
-                                                where pro_id in (select pro_id
-                                                                   from pro_position
-                                                                  where emp_id = #{emp_id}))
-                           and emp_id = #{emp_id})
-          where st_dt <![CDATA[<=]]> sysdate
-		    and end_dt >= sysdate
-          order by st_dt, end_dt
-	</select>
-	
-	<select id="getWeekCalendar" parameterType="String" resultType="calendar">
-        select *
-		  from         (select *
-                          from calendar
-                         where depart_id is null
-                           and emp_id = #{emp_id}
-                           and category_id in (select category_id
-                                                from category
-                                               where pro_id is null)
-                          UNION ALL
-                        select *
-                          from calendar
-                         where depart_id = (select depart_id 
-                                              from employee
-                                             where emp_id = #{emp_id})
-                         UNION ALL
-                        select *
-                          from calendar
-                         where category_id in (select category_id
-                                                 from category
-                                                where pro_id in (select pro_id
-                                                                   from pro_position
-                                                                  where emp_id = #{emp_id}))
-                           and emp_id = #{emp_id})
-          where to_number(to_char(trunc(st_dt, 'iw'),'WW')) <![CDATA[<=]]> to_number(to_char(trunc(sysdate, 'iw'),'WW')) 
-            and to_number(to_char(trunc(end_dt, 'iw'),'WW')) >= to_number(to_char(trunc(sysdate, 'iw'),'WW'))
-          order by st_dt, end_dt
-	</select>
-	
-	
-	<select id="getAllCrawlingCalendarList" parameterType="calendar" resultType="calendar">
-			SELECT
-			    b_apco_key            AS bApcoKey,
-			    b_apco_channel        AS bApcoChannel,
-			    b_apco_status         AS bApcoStatus,
-			    b_apco_num            AS bApcoNum,
-			    b_apco_room           AS bApcoRoom,
-			    b_apco_check_in_date  AS bApcoCheckInDate,
-			    b_apco_check_out_date AS bApcoCheckOutDate,
-			    b_apco_name           AS bApcoName,
-			    (CASE 
-			        WHEN b_apco_person LIKE '%명%' THEN b_apco_person
-			        ELSE CONCAT(b_apco_person, '명')
-			    END )                 AS bApcoPerson,
-			    b_apco_barbecue       AS bApcoBarbecue,
-			    b_apco_payment        AS bApcoPayment,
-			    b_apco_hp             AS bApcoHp,
-			    b_apco_boo_date       AS bApcoBooDate,
-			    b_apco_boo_time       AS bApcoBooTime,
-			    b_apco_etc            AS bApcoEtc,
-			    'apco'				  AS gubun
-			FROM
-			    b_apco
-			WHERE
-			     b_apco_check_in_date BETWEEN
-			     DATE_SUB(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d'), INTERVAL DAYOFWEEK(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d')) - 1 DAY) AND
-			     DATE_ADD(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d')), INTERVAL 7 - DAYOFWEEK(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d'))) DAY)
-			
+		from (select *
+		from calendar
+		where depart_id is null
+		and emp_id = #{emp_id}
+		and category_id in (select category_id
+		from category
+		where pro_id is null)
 		UNION ALL
-			
-			SELECT
-			    b_com_key             AS bApcoKey,
-			    b_com_channel         AS bApcoChannel,
-			    b_com_status          AS bApcoStatus,
-			    b_com_num             AS bApcoNum,
-			    b_com_room            AS bApcoRoom,
-			    b_com_check_in_date   AS bApcoCheckInDate,
-			    b_com_check_out_date  AS bApcoCheckOutDate,
-			    b_com_name            AS bApcoName,
-			    (CASE 
-			        WHEN b_com_person LIKE '%명%' THEN b_com_person
-			        ELSE CONCAT(b_com_person, '명')
-			    END )                 AS bApcoPerson,
-			    b_com_barbecue        AS bApcoBarbecue,
-			    b_com_payment         AS bApcoPayment,
-			    b_com_hp              AS bApcoHp,
-			    b_com_boo_date        AS bApcoBooDate,
-			    b_com_boo_time        AS bApcoBooTime,
-			    b_com_etc             AS bApcoEtc,
-			    'com'				  AS gubun
-			FROM
-			    b_com
-			WHERE
-			     b_com_check_in_date BETWEEN
-			     DATE_SUB(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d'), INTERVAL DAYOFWEEK(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d')) - 1 DAY) AND
-			     DATE_ADD(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d')), INTERVAL 7 - DAYOFWEEK(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d'))) DAY)
-			    
-	    UNION ALL
-			
-			SELECT
-			    b_temp_key             AS bApcoKey,
-			    b_temp_channel         AS bApcoChannel,
-			    b_temp_status          AS bApcoStatus,
-			    b_temp_num             AS bApcoNum,
-			    b_temp_room            AS bApcoRoom,
-			    b_temp_check_in_date   AS bApcoCheckInDate,
-			    b_temp_check_out_date  AS bApcoCheckOutDate,
-			    b_temp_name            AS bApcoName,
-			    (CASE 
-			        WHEN b_temp_person LIKE '%명%' THEN b_temp_person
-			        ELSE CONCAT(b_temp_person, '명')
-			    END )                 AS bApcoPerson,
-			    b_temp_barbecue        AS bApcoBarbecue,
-			    b_temp_payment         AS bApcoPayment,
-			    b_temp_hp              AS bApcoHp,
-			    b_temp_boo_date        AS bApcoBooDate,
-			    b_temp_boo_time        AS bApcoBooTime,
-			    b_temp_etc             AS bApcoEtc,
-			    'temp'				  AS gubun
-			    
-			FROM
-			    b_temp
-			WHERE
-			     b_temp_check_in_date BETWEEN
-			     DATE_SUB(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d'), INTERVAL DAYOFWEEK(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d')) - 1 DAY) AND
-			     DATE_ADD(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d')), INTERVAL 7 - DAYOFWEEK(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d'))) DAY)
-			    
-	    UNION ALL
-			
-			SELECT
-			    b_cash_key             AS bApcoKey,
-			    b_cash_channel         AS bApcoChannel,
-			    b_cash_status          AS bApcoStatus,
-			    b_cash_num             AS bApcoNum,
-			    b_cash_room            AS bApcoRoom,
-			    b_cash_check_in_date   AS bApcoCheckInDate,
-			    b_cash_check_out_date  AS bApcoCheckOutDate,
-			    b_cash_name            AS bApcoName,
-			    (CASE 
-			        WHEN b_cash_person LIKE '%명%' THEN b_cash_person
-			        ELSE CONCAT(b_cash_person, '명')
-			    END )                 AS bApcoPerson,
-			    b_cash_barbecue        AS bApcoBarbecue,
-			    b_cash_payment         AS bApcoPayment,
-			    b_cash_hp              AS bApcoHp,
-			    b_cash_boo_date        AS bApcoBooDate,
-			    b_cash_boo_time        AS bApcoBooTime,
-			    b_cash_etc             AS bApcoEtc,
-			    'cash'				  AS gubun
-			FROM
-			    b_cash
-			WHERE
-			    b_cash_check_in_date BETWEEN
-			     DATE_SUB(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d'), INTERVAL DAYOFWEEK(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d')) - 1 DAY) AND
-			     DATE_ADD(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d')), INTERVAL 7 - DAYOFWEEK(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d'))) DAY)
+		select *
+		from calendar
+		where depart_id = (select depart_id
+		from employee
+		where emp_id = #{emp_id})
+		UNION ALL
+		select *
+		from calendar
+		where category_id in (select category_id
+		from category
+		where pro_id in (select pro_id
+		from pro_position
+		where emp_id = #{emp_id}))
+		and emp_id = #{emp_id})
+		where st_dt <![CDATA[<=]]>
+		sysdate
+		and end_dt >= sysdate
+		order by st_dt, end_dt
+	</select>
+
+	<select id="getWeekCalendar" parameterType="String" resultType="calendar">
+		select *
+		from (select *
+		from calendar
+		where depart_id is null
+		and emp_id = #{emp_id}
+		and category_id in (select category_id
+		from category
+		where pro_id is null)
+		UNION ALL
+		select *
+		from calendar
+		where depart_id = (select depart_id
+		from employee
+		where emp_id = #{emp_id})
+		UNION ALL
+		select *
+		from calendar
+		where category_id in (select category_id
+		from category
+		where pro_id in (select pro_id
+		from pro_position
+		where emp_id = #{emp_id}))
+		and emp_id = #{emp_id})
+		where to_number(to_char(trunc(st_dt, 'iw'),'WW')) <![CDATA[<=]]>
+		to_number(to_char(trunc(sysdate, 'iw'),'WW'))
+		and to_number(to_char(trunc(end_dt, 'iw'),'WW')) >=
+		to_number(to_char(trunc(sysdate, 'iw'),'WW'))
+		order by st_dt, end_dt
+	</select>
+
+
+	<select id="getAllCrawlingCalendarList" parameterType="calendar"
+		resultType="calendar">
+		SELECT
+		b_apco_key AS bApcoKey,
+		b_apco_channel AS bApcoChannel,
+		b_apco_status AS bApcoStatus,
+		b_apco_num AS bApcoNum,
+		b_apco_room AS bApcoRoom,
+		b_apco_check_in_date AS bApcoCheckInDate,
+		b_apco_check_out_date AS bApcoCheckOutDate,
+		b_apco_name AS bApcoName,
+		(CASE
+		WHEN b_apco_person LIKE '%명%' THEN b_apco_person
+		ELSE CONCAT(b_apco_person, '명')
+		END ) AS bApcoPerson,
+		b_apco_barbecue AS bApcoBarbecue,
+		b_apco_payment AS bApcoPayment,
+		b_apco_hp AS bApcoHp,
+		b_apco_boo_date AS bApcoBooDate,
+		b_apco_boo_time AS bApcoBooTime,
+		b_apco_etc AS bApcoEtc,
+		'apco' AS gubun
+		FROM
+		b_apco
+		WHERE
+		b_apco_check_in_date BETWEEN
+		DATE_SUB(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d'), INTERVAL DAYOFWEEK(STR_TO_DATE(#{bApcoCheckInDate},
+		'%Y-%m-%d')) - 1 DAY) AND
+		DATE_ADD(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d')),
+		INTERVAL 7 - DAYOFWEEK(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate},
+		'%Y-%m-%d'))) DAY)
+
+		UNION ALL
+
+		SELECT
+		b_com_key AS bApcoKey,
+		b_com_channel AS bApcoChannel,
+		b_com_status AS bApcoStatus,
+		b_com_num AS bApcoNum,
+		b_com_room AS bApcoRoom,
+		b_com_check_in_date AS bApcoCheckInDate,
+		b_com_check_out_date AS bApcoCheckOutDate,
+		b_com_name AS bApcoName,
+		(CASE
+		WHEN b_com_person LIKE '%명%' THEN b_com_person
+		ELSE CONCAT(b_com_person, '명')
+		END ) AS bApcoPerson,
+		b_com_barbecue AS bApcoBarbecue,
+		b_com_payment AS bApcoPayment,
+		b_com_hp AS bApcoHp,
+		b_com_boo_date AS bApcoBooDate,
+		b_com_boo_time AS bApcoBooTime,
+		b_com_etc AS bApcoEtc,
+		'com' AS gubun
+		FROM
+		b_com
+		WHERE
+		b_com_check_in_date BETWEEN
+		DATE_SUB(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d'), INTERVAL DAYOFWEEK(STR_TO_DATE(#{bApcoCheckInDate},
+		'%Y-%m-%d')) - 1 DAY) AND
+		DATE_ADD(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d')),
+		INTERVAL 7 - DAYOFWEEK(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate},
+		'%Y-%m-%d'))) DAY)
+
+		UNION ALL
+
+		SELECT
+		b_temp_key AS bApcoKey,
+		b_temp_channel AS bApcoChannel,
+		b_temp_status AS bApcoStatus,
+		b_temp_num AS bApcoNum,
+		b_temp_room AS bApcoRoom,
+		b_temp_check_in_date AS bApcoCheckInDate,
+		b_temp_check_out_date AS bApcoCheckOutDate,
+		b_temp_name AS bApcoName,
+		(CASE
+		WHEN b_temp_person LIKE '%명%' THEN b_temp_person
+		ELSE CONCAT(b_temp_person, '명')
+		END ) AS bApcoPerson,
+		b_temp_barbecue AS bApcoBarbecue,
+		b_temp_payment AS bApcoPayment,
+		b_temp_hp AS bApcoHp,
+		b_temp_boo_date AS bApcoBooDate,
+		b_temp_boo_time AS bApcoBooTime,
+		b_temp_etc AS bApcoEtc,
+		'temp' AS gubun
+
+		FROM
+		b_temp
+		WHERE
+		b_temp_check_in_date BETWEEN
+		DATE_SUB(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d'), INTERVAL DAYOFWEEK(STR_TO_DATE(#{bApcoCheckInDate},
+		'%Y-%m-%d')) - 1 DAY) AND
+		DATE_ADD(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d')),
+		INTERVAL 7 - DAYOFWEEK(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate},
+		'%Y-%m-%d'))) DAY)
+
+		UNION ALL
+
+		SELECT
+		b_cash_key AS bApcoKey,
+		b_cash_channel AS bApcoChannel,
+		b_cash_status AS bApcoStatus,
+		b_cash_num AS bApcoNum,
+		b_cash_room AS bApcoRoom,
+		b_cash_check_in_date AS bApcoCheckInDate,
+		b_cash_check_out_date AS bApcoCheckOutDate,
+		b_cash_name AS bApcoName,
+		(CASE
+		WHEN b_cash_person LIKE '%명%' THEN b_cash_person
+		ELSE CONCAT(b_cash_person, '명')
+		END ) AS bApcoPerson,
+		b_cash_barbecue AS bApcoBarbecue,
+		b_cash_payment AS bApcoPayment,
+		b_cash_hp AS bApcoHp,
+		b_cash_boo_date AS bApcoBooDate,
+		b_cash_boo_time AS bApcoBooTime,
+		b_cash_etc AS bApcoEtc,
+		'cash' AS gubun
+		FROM
+		b_cash
+		WHERE
+		b_cash_check_in_date BETWEEN
+		DATE_SUB(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d'), INTERVAL DAYOFWEEK(STR_TO_DATE(#{bApcoCheckInDate},
+		'%Y-%m-%d')) - 1 DAY) AND
+		DATE_ADD(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate}, '%Y-%m-%d')),
+		INTERVAL 7 - DAYOFWEEK(LAST_DAY(STR_TO_DATE(#{bApcoCheckInDate},
+		'%Y-%m-%d'))) DAY)
 
 	</select>
-	
-	
+
+
 	<!-- 사원의 개인일정 리스트 반환 -->
 	<select id="getRoomList" resultType="calendar">
-		select 
-			room_id as room_id
-			, room_nm as roomNm
-			
-		  from room
-		 order by room_id
+		select
+		room_id as room_id
+		, room_nm as roomNm
+
+		from room
+		order by room_id
 	</select>
-	
-	
+
+
 	<insert id="insertNewCalendar" parameterType="calendar">
 		insert into b_cash
 		(
-			b_cash_channel
-			, b_cash_status
-			, b_cash_num
-			, b_cash_room
-			, b_cash_check_in_date
-			, b_cash_check_out_date
-			, b_cash_name
-			, b_cash_person
-			, b_cash_barbecue
-			, b_cash_payment
-			, b_cash_hp
-			, b_cash_etc
-			, b_cash_boo_date
-			, b_cash_boo_time
+		b_cash_channel
+		, b_cash_status
+		, b_cash_num
+		, b_cash_room
+		, b_cash_check_in_date
+		, b_cash_check_out_date
+		, b_cash_name
+		, b_cash_person
+		, b_cash_barbecue
+		, b_cash_payment
+		, b_cash_hp
+		, b_cash_etc
+		, b_cash_boo_date
+		, b_cash_boo_time
 		)
 		values
 		(
-			#{category_id}
-			, #{bApcoStatus}
-			, #{bApcoNum}
-			, #{room_id}
-			, #{st_dt}
-			, #{end_dt}
-			, #{bApcoName}
-			, #{bApcoPerson}
-			, '-'
-			, #{bApcoPayment}
-			, #{bApcoHp}
-			, #{bApcoEtc}
-			, CURDATE()
-			, CURTIME()
-		) 
+		#{category_id}
+		, #{bApcoStatus}
+		, #{bApcoNum}
+		, #{room_id}
+		, #{st_dt}
+		, #{end_dt}
+		, #{bApcoName}
+		, #{bApcoPerson}
+		, '-'
+		, #{bApcoPayment}
+		, #{bApcoHp}
+		, #{bApcoEtc}
+		, CURDATE()
+		, CURTIME()
+		)
 	</insert>
-	
+
 	<!-- 일정 수정 -->
 	<update id="updateNewCalendar" parameterType="calendar">
 		/* updateNewCalendar */
-			<!-- update b_apco
-			   set b_apco_channel 	= #{category_id}
-			   	   , b_apco_status 	= #{bApcoStatus}
-			   	   , b_apco_room		= #{room_id}
-			   	   , b_apco_check_in_date 			= #{st_dt}
-			   	   , b_apco_check_out_date 			= #{end_dt}
-			   	   , b_apco_name 	= #{bApcoName}
-			   	   , b_apco_payment = #{bApcoPayment}
-			   	   , b_apco_person  = #{bApcoPerson}
-			   	   , b_apco_hp 		= #{bApcoHp}
-			   	   , b_apco_etc 	= #{bApcoEtc}
-			   	   , b_apco_boo_date = #{st_dt}
-			 where b_apco_key = #{bApcoKey} -->
-			 
-			 
-	    UPDATE
-	        <choose>
-	            <when test="gubun == 'temp'">b_temp</when>
-	            <when test="gubun == 'cash'">b_cash</when>
-	        </choose>
-	    <set>
-	        <if test="gubun == 'temp'">
-	            b_temp_channel = #{category_id},
-	            b_temp_status = #{bApcoStatus},
-	            b_temp_room = #{room_id},
-	            b_temp_check_in_date = #{st_dt},
-	            b_temp_check_out_date = #{end_dt},
-	            b_temp_name = #{bApcoName},
-	            b_temp_payment = #{bApcoPayment},
-	            b_temp_person = #{bApcoPerson},
-	            b_temp_hp = #{bApcoHp},
-	            b_temp_etc = #{bApcoEtc},
-	            b_temp_boo_date = #{st_dt}
-	        </if>
-	        <if test="gubun == 'cash'">
-	            b_cash_channel = #{category_id},
-	            b_cash_status = #{bApcoStatus},
-	            b_cash_room = #{room_id},
-	            b_cash_check_in_date = #{st_dt},
-	            b_cash_check_out_date = #{end_dt},
-	            b_cash_name = #{bApcoName},
-	            b_cash_payment = #{bApcoPayment},
-	            b_cash_person = #{bApcoPerson},
-	            b_cash_hp = #{bApcoHp},
-	            b_cash_etc = #{bApcoEtc},
-	            b_cash_boo_date = #{st_dt}
-	        </if>
-	    </set>
-	    WHERE
-	        <choose>
-	            <when test="gubun == 'temp'">b_temp_key = #{bApcoKey}</when>
-	            <when test="gubun == 'cash'">b_cash_key = #{bApcoKey}</when>
-	        </choose>
-	
+		<!-- update b_apco set b_apco_channel = #{category_id} , b_apco_status 
+			= #{bApcoStatus} , b_apco_room = #{room_id} , b_apco_check_in_date = #{st_dt} 
+			, b_apco_check_out_date = #{end_dt} , b_apco_name = #{bApcoName} , b_apco_payment 
+			= #{bApcoPayment} , b_apco_person = #{bApcoPerson} , b_apco_hp = #{bApcoHp} 
+			, b_apco_etc = #{bApcoEtc} , b_apco_boo_date = #{st_dt} where b_apco_key 
+			= #{bApcoKey} -->
+
+
+		UPDATE
+		<choose>
+			<when test="gubun == 'temp'">b_temp</when>
+			<when test="gubun == 'cash'">b_cash</when>
+		</choose>
+		<set>
+			<if test="gubun == 'temp'">
+				b_temp_channel = #{category_id},
+				b_temp_status = #{bApcoStatus},
+				b_temp_room = #{room_id},
+				b_temp_check_in_date = #{st_dt},
+				b_temp_check_out_date = #{end_dt},
+				b_temp_name = #{bApcoName},
+				b_temp_payment = #{bApcoPayment},
+				b_temp_person = #{bApcoPerson},
+				b_temp_hp = #{bApcoHp},
+				b_temp_etc = #{bApcoEtc},
+				b_temp_boo_date = #{st_dt}
+			</if>
+			<if test="gubun == 'cash'">
+				b_cash_channel = #{category_id},
+				b_cash_status = #{bApcoStatus},
+				b_cash_room = #{room_id},
+				b_cash_check_in_date = #{st_dt},
+				b_cash_check_out_date = #{end_dt},
+				b_cash_name = #{bApcoName},
+				b_cash_payment = #{bApcoPayment},
+				b_cash_person = #{bApcoPerson},
+				b_cash_hp = #{bApcoHp},
+				b_cash_etc = #{bApcoEtc},
+				b_cash_boo_date = #{st_dt}
+			</if>
+		</set>
+		WHERE
+		<choose>
+			<when test="gubun == 'temp'">b_temp_key = #{bApcoKey}</when>
+			<when test="gubun == 'cash'">b_cash_key = #{bApcoKey}</when>
+		</choose>
+
 	</update>
-		 
-		
-	
+
+
+
 	<!-- 일정 삭제 -->
 	<delete id="deleteNewCalendar" parameterType="calendar">
-		<!-- delete from b_apco
-		 where b_apco_key = #{bApcoKey} -->
-		 
-		 
-		 DELETE FROM 
-		 	<choose>
-		 		<when test="gubun == 'temp'">b_temp</when>
-		 		<when test="gubun == 'cash'">b_cash</when>
-		 	</choose>
-	 	 WHERE 
-	 		<choose>
-	            <when test="gubun == 'temp'">b_temp_key = #{bApcoKey}</when>
-	            <when test="gubun == 'cash'">b_cash_key = #{bApcoKey}</when>
-	        </choose>
+		<!-- delete from b_apco where b_apco_key = #{bApcoKey} -->
+
+
+		DELETE FROM
+		<choose>
+			<when test="gubun == 'temp'">b_temp</when>
+			<when test="gubun == 'cash'">b_cash</when>
+		</choose>
+		WHERE
+		<choose>
+			<when test="gubun == 'temp'">b_temp_key = #{bApcoKey}</when>
+			<when test="gubun == 'cash'">b_cash_key = #{bApcoKey}</when>
+		</choose>
 	</delete>
-	
-	
-	<select id="getAllExcelList" parameterType="calendar" resultType="calendar">
-		SELECT 
-		  s.bApcoChannel
-		 , concat('#',s.bApcoRoom) as bApcoRoom
-		 , s.bApcoCheckInDate
-		 , date_format(s.bApcoCheckInDate, '%c월 %e일') as bApcoCheckInDateMonth
-		 , s.bApcoName
-		 , s.bApcoPerson
-		 , IF(bApcoEtc LIKE '%바베큐%' OR bApcoEtc LIKE '%바비큐%', 'O', '') AS barbecueStatus
-		 , s.bApcoPayment
-		 , s.bApcoHp
-		 , s.bApcoBooDate
-		 , s.bApcoBooTime
-		 , s.bApcoEtc
-		FROM 
-		(
+
+
+	<select id="getAllExcelList" parameterType="calendar"
+		resultType="calendar">
+		WITH RECURSIVE b_apco_r AS (
 		SELECT
-			    b_apco_key            AS bApcoKey,
-			    b_apco_channel        AS bApcoChannel,
-			    b_apco_status         AS bApcoStatus,
-			    b_apco_num            AS bApcoNum,
-			    b_apco_room           AS bApcoRoom,
-			    b_apco_check_in_date  AS bApcoCheckInDate,
-			    b_apco_check_out_date AS bApcoCheckOutDate,
-			    b_apco_name           AS bApcoName,
-			    (CASE 
-			        WHEN b_apco_person LIKE '%명%' THEN b_apco_person
-			        ELSE CONCAT(b_apco_person, '명')
-			    END )                 AS bApcoPerson,
-			    b_apco_barbecue       AS bApcoBarbecue,
-			    b_apco_payment        AS bApcoPayment,
-			    b_apco_hp             AS bApcoHp,
-			    b_apco_boo_date       AS bApcoBooDate,
-			    b_apco_boo_time       AS bApcoBooTime,
-			    b_apco_etc            AS bApcoEtc,
-			    'apco'				  AS gubun
-			FROM
-			    b_apco
-			WHERE
-			    b_apco_check_in_date BETWEEN #{startDate} AND #{endDate}
-			
+		b_apco_key AS bApcoKey,
+		b_apco_channel AS bApcoChannel,
+		b_apco_status AS bApcoStatus,
+		b_apco_num AS bApcoNum,
+		b_apco_room AS bApcoRoom,
+		b_apco_check_in_date AS reservation_date,
+		b_apco_check_out_date AS bApcoCheckOutDate,
+		b_apco_name AS bApcoName,
+		b_apco_person AS bApcoPerson,
+		b_apco_barbecue AS bApcoBarbecue,
+		b_apco_payment AS bApcoPayment,
+		b_apco_hp AS bApcoHp,
+		b_apco_boo_date AS bApcoBooDate,
+		b_apco_boo_time AS bApcoBooTime,
+		b_apco_etc AS bApcoEtc,
+		'apco' AS gubun
+		FROM
+		b_apco
+		WHERE 
+		  	<![CDATA[
+		    b_apco_check_in_date < #{endDate} AND 
+		    b_apco_check_out_date > #{startDate}
+		    ]]>
+
 		UNION ALL
-			
-			SELECT
-			    b_com_key             AS bApcoKey,
-			    b_com_channel         AS bApcoChannel,
-			    b_com_status          AS bApcoStatus,
-			    b_com_num             AS bApcoNum,
-			    b_com_room            AS bApcoRoom,
-			    b_com_check_in_date   AS bApcoCheckInDate,
-			    b_com_check_out_date  AS bApcoCheckOutDate,
-			    b_com_name            AS bApcoName,
-			    (CASE 
-			        WHEN b_com_person LIKE '%명%' THEN b_com_person
-			        ELSE CONCAT(b_com_person, '명')
-			    END )                 AS bApcoPerson,
-			    b_com_barbecue        AS bApcoBarbecue,
-			    b_com_payment         AS bApcoPayment,
-			    b_com_hp              AS bApcoHp,
-			    b_com_boo_date        AS bApcoBooDate,
-			    b_com_boo_time        AS bApcoBooTime,
-			    b_com_etc             AS bApcoEtc,
-			    'com'				  AS gubun
-			FROM
-			    b_com
-			WHERE
-			    b_com_check_in_date BETWEEN #{startDate} AND #{endDate}
-			    
-	    UNION ALL
-			
-			SELECT
-			    b_temp_key             AS bApcoKey,
-			    b_temp_channel         AS bApcoChannel,
-			    b_temp_status          AS bApcoStatus,
-			    b_temp_num             AS bApcoNum,
-			    b_temp_room            AS bApcoRoom,
-			    b_temp_check_in_date   AS bApcoCheckInDate,
-			    b_temp_check_out_date  AS bApcoCheckOutDate,
-			    b_temp_name            AS bApcoName,
-			    (CASE 
-			        WHEN b_temp_person LIKE '%명%' THEN b_temp_person
-			        ELSE CONCAT(b_temp_person, '명')
-			    END )                 AS bApcoPerson,
-			    b_temp_barbecue        AS bApcoBarbecue,
-			    b_temp_payment         AS bApcoPayment,
-			    b_temp_hp              AS bApcoHp,
-			    b_temp_boo_date        AS bApcoBooDate,
-			    b_temp_boo_time        AS bApcoBooTime,
-			    b_temp_etc             AS bApcoEtc,
-			    'temp'				  AS gubun
-			    
-			FROM
-			    b_temp
-			WHERE
-			    b_temp_check_in_date BETWEEN #{startDate} AND #{endDate}
-			    
-	    UNION ALL
-			
-			SELECT
-			    b_cash_key             AS bApcoKey,
-			    b_cash_channel         AS bApcoChannel,
-			    b_cash_status          AS bApcoStatus,
-			    b_cash_num             AS bApcoNum,
-			    b_cash_room            AS bApcoRoom,
-			    b_cash_check_in_date   AS bApcoCheckInDate,
-			    b_cash_check_out_date  AS bApcoCheckOutDate,
-			    b_cash_name            AS bApcoName,
-			    (CASE 
-			        WHEN b_cash_person LIKE '%명%' THEN b_cash_person
-			        ELSE CONCAT(b_cash_person, '명')
-			    END )                 AS bApcoPerson,
-			    b_cash_barbecue        AS bApcoBarbecue,
-			    b_cash_payment         AS bApcoPayment,
-			    b_cash_hp              AS bApcoHp,
-			    b_cash_boo_date        AS bApcoBooDate,
-			    b_cash_boo_time        AS bApcoBooTime,
-			    b_cash_etc             AS bApcoEtc,
-			    'cash'				  AS gubun
-			FROM
-			    b_cash
-			WHERE
-			    b_cash_check_in_date BETWEEN #{startDate} AND #{endDate}
-		    ) s
+
+		SELECT
+		bApcoKey,
+		bApcoChannel,
+		bApcoStatus,
+		bApcoNum,
+		bApcoRoom,
+		DATE_ADD(reservation_date, INTERVAL 1 DAY) AS reservation_date,
+		bApcoCheckOutDate,
+		bApcoName,
+		bApcoPerson,
+		bApcoBarbecue,
+		bApcoPayment,
+		bApcoHp,
+		bApcoBooDate,
+		bApcoBooTime,
+		bApcoEtc,
+		gubun
+		FROM
+		b_apco_r
+		WHERE
+		  <![CDATA[
+		    reservation_date < DATE_SUB(bApcoCheckOutDate, INTERVAL 1 DAY)
+		  ]]>
+		),
+		b_com_r AS (
+		SELECT
+		b_com_key AS bApcoKey,
+		b_com_channel AS bApcoChannel,
+		b_com_status AS bApcoStatus,
+		b_com_num AS bApcoNum,
+		b_com_room AS bApcoRoom,
+		b_com_check_in_date AS reservation_date,
+		b_com_check_out_date AS bApcoCheckOutDate,
+		b_com_name AS bApcoName,
+		b_com_person AS bApcoPerson,
+		b_com_barbecue AS bApcoBarbecue,
+		b_com_payment AS bApcoPayment,
+		b_com_hp AS bApcoHp,
+		b_com_boo_date AS bApcoBooDate,
+		b_com_boo_time AS bApcoBooTime,
+		b_com_etc AS bApcoEtc,
+		'com' AS gubun
+		FROM
+		b_com
+		WHERE 
+		  <![CDATA[
+		    b_com_check_in_date < #{endDate} AND 
+		    b_com_check_out_date > #{startDate}
+		  ]]>
+
+		UNION ALL
+
+		SELECT
+		bApcoKey,
+		bApcoChannel,
+		bApcoStatus,
+		bApcoNum,
+		bApcoRoom,
+		DATE_ADD(reservation_date, INTERVAL 1 DAY) AS reservation_date,
+		bApcoCheckOutDate,
+		bApcoName,
+		bApcoPerson,
+		bApcoBarbecue,
+		bApcoPayment,
+		bApcoHp,
+		bApcoBooDate,
+		bApcoBooTime,
+		bApcoEtc,
+		gubun
+		FROM
+		b_com_r
+		WHERE 
+		  <![CDATA[
+		    reservation_date < DATE_SUB(bApcoCheckOutDate, INTERVAL 1 DAY)
+	       ]]>
+		),
+		b_cash_r AS (
+		SELECT
+		b_cash_key AS bApcoKey,
+		b_cash_channel AS bApcoChannel,
+		b_cash_status AS bApcoStatus,
+		b_cash_num AS bApcoNum,
+		b_cash_room AS bApcoRoom,
+		b_cash_check_in_date AS reservation_date,
+		b_cash_check_out_date AS bApcoCheckOutDate,
+		b_cash_name AS bApcoName,
+		b_cash_person AS bApcoPerson,
+		b_cash_barbecue AS bApcoBarbecue,
+		b_cash_payment AS bApcoPayment,
+		b_cash_hp AS bApcoHp,
+		b_cash_boo_date AS bApcoBooDate,
+		b_cash_boo_time AS bApcoBooTime,
+		b_cash_etc AS bApcoEtc,
+		'cash' AS gubun
+		FROM
+		b_cash
+		WHERE 
+		  <![CDATA[
+		    b_cash_check_in_date < #{endDate} AND 
+		    b_cash_check_out_date > #{startDate}
+		    ]]>
+
+		UNION ALL
+
+		SELECT
+		bApcoKey,
+		bApcoChannel,
+		bApcoStatus,
+		bApcoNum,
+		bApcoRoom,
+		DATE_ADD(reservation_date, INTERVAL 1 DAY) AS reservation_date,
+		bApcoCheckOutDate,
+		bApcoName,
+		bApcoPerson,
+		bApcoBarbecue,
+		bApcoPayment,
+		bApcoHp,
+		bApcoBooDate,
+		bApcoBooTime,
+		bApcoEtc,
+		gubun
+		FROM
+		b_cash_r
+		WHERE 
+		  <![CDATA[
+		    reservation_date < DATE_SUB(bApcoCheckOutDate, INTERVAL 1 DAY)
+	      ]]>
+		),
+		final_result AS (
+		SELECT * FROM b_apco_r
+		UNION ALL
+		SELECT * FROM b_com_r
+		UNION ALL
+		SELECT * FROM b_cash_r
+		)
+		SELECT
+		bApcoKey,
+		bApcoChannel,
+		bApcoStatus,
+		bApcoNum,
+		CONCAT('#', bApcoRoom) AS bApcoRoom,
+		reservation_date,
+		bApcoCheckOutDate,
+		bApcoName,
+		bApcoPerson,
+		bApcoBarbecue,
+		bApcoPayment,
+		bApcoHp,
+		bApcoBooDate,
+		bApcoBooTime,
+		bApcoEtc,
+		gubun,
+		(
+		CASE 
+	        WHEN bApcoEtc LIKE '%바베큐%' OR bApcoBarbecue LIKE '%바베큐%' THEN 'O'
+	        ELSE ''
+	    END
+	    ) AS barbecueStatus
+		FROM
+		final_result
+		WHERE 
+		<![CDATA[
+		  reservation_date >= #{startDate} AND 
+		  reservation_date < #{endDate}
+		  ]]>
+		ORDER BY
+		bApcoRoom,
+		reservation_date
+
+		<!-- SELECT s.bApcoChannel , concat('#',s.bApcoRoom) as bApcoRoom , s.bApcoCheckInDate 
+			, s.bApcoCheckOutDate , date_format(s.bApcoCheckInDate, '%m월 %d일') as bApcoCheckInDateMonth 
+			, s.bApcoName , s.bApcoPerson , IF(bApcoEtc LIKE '%바베큐%' OR bApcoEtc LIKE 
+			'%바비큐%', 'O', '') AS barbecueStatus , s.bApcoPayment , s.bApcoHp , s.bApcoBooDate 
+			, s.bApcoBooTime , s.bApcoEtc FROM ( SELECT b_apco_key AS bApcoKey, b_apco_channel 
+			AS bApcoChannel, b_apco_status AS bApcoStatus, b_apco_num AS bApcoNum, b_apco_room 
+			AS bApcoRoom, b_apco_check_in_date AS bApcoCheckInDate, b_apco_check_out_date 
+			AS bApcoCheckOutDate, b_apco_name AS bApcoName, (CASE WHEN b_apco_person 
+			LIKE '%명%' THEN b_apco_person ELSE CONCAT(b_apco_person, '명') END ) AS bApcoPerson, 
+			b_apco_barbecue AS bApcoBarbecue, b_apco_payment AS bApcoPayment, b_apco_hp 
+			AS bApcoHp, b_apco_boo_date AS bApcoBooDate, b_apco_boo_time AS bApcoBooTime, 
+			b_apco_etc AS bApcoEtc, 'apco' AS gubun FROM b_apco WHERE b_apco_check_in_date 
+			BETWEEN #{startDate} AND #{endDate} UNION ALL SELECT b_com_key AS bApcoKey, 
+			b_com_channel AS bApcoChannel, b_com_status AS bApcoStatus, b_com_num AS 
+			bApcoNum, b_com_room AS bApcoRoom, b_com_check_in_date AS bApcoCheckInDate, 
+			b_com_check_out_date AS bApcoCheckOutDate, b_com_name AS bApcoName, (CASE 
+			WHEN b_com_person LIKE '%명%' THEN b_com_person ELSE CONCAT(b_com_person, 
+			'명') END ) AS bApcoPerson, b_com_barbecue AS bApcoBarbecue, b_com_payment 
+			AS bApcoPayment, b_com_hp AS bApcoHp, b_com_boo_date AS bApcoBooDate, b_com_boo_time 
+			AS bApcoBooTime, b_com_etc AS bApcoEtc, 'com' AS gubun FROM b_com WHERE b_com_check_in_date 
+			BETWEEN #{startDate} AND #{endDate} UNION ALL SELECT b_temp_key AS bApcoKey, 
+			b_temp_channel AS bApcoChannel, b_temp_status AS bApcoStatus, b_temp_num 
+			AS bApcoNum, b_temp_room AS bApcoRoom, b_temp_check_in_date AS bApcoCheckInDate, 
+			b_temp_check_out_date AS bApcoCheckOutDate, b_temp_name AS bApcoName, (CASE 
+			WHEN b_temp_person LIKE '%명%' THEN b_temp_person ELSE CONCAT(b_temp_person, 
+			'명') END ) AS bApcoPerson, b_temp_barbecue AS bApcoBarbecue, b_temp_payment 
+			AS bApcoPayment, b_temp_hp AS bApcoHp, b_temp_boo_date AS bApcoBooDate, b_temp_boo_time 
+			AS bApcoBooTime, b_temp_etc AS bApcoEtc, 'temp' AS gubun FROM b_temp WHERE 
+			b_temp_check_in_date BETWEEN #{startDate} AND #{endDate} UNION ALL SELECT 
+			b_cash_key AS bApcoKey, b_cash_channel AS bApcoChannel, b_cash_status AS 
+			bApcoStatus, b_cash_num AS bApcoNum, b_cash_room AS bApcoRoom, b_cash_check_in_date 
+			AS bApcoCheckInDate, b_cash_check_out_date AS bApcoCheckOutDate, b_cash_name 
+			AS bApcoName, (CASE WHEN b_cash_person LIKE '%명%' THEN b_cash_person ELSE 
+			CONCAT(b_cash_person, '명') END ) AS bApcoPerson, b_cash_barbecue AS bApcoBarbecue, 
+			b_cash_payment AS bApcoPayment, b_cash_hp AS bApcoHp, b_cash_boo_date AS 
+			bApcoBooDate, b_cash_boo_time AS bApcoBooTime, b_cash_etc AS bApcoEtc, 'cash' 
+			AS gubun FROM b_cash WHERE b_cash_check_in_date BETWEEN #{startDate} AND 
+			#{endDate} ) s -->
 	</select>
-	
-	
+
+
 	<select id="isBapcoNumExist" parameterType="string" resultType="int">
-	    SELECT COUNT(*)
-	    FROM b_cash
-	    WHERE b_cash_num = #{bApcoNum}
+		SELECT COUNT(*)
+		FROM b_cash
+		WHERE b_cash_num = #{bApcoNum}
 	</select>
-		
-	
+
+
 	<select id="checkAvailability" parameterType="map" resultType="int">
-        SELECT COUNT(*)
+		SELECT COUNT(*)
 		FROM (
-		    SELECT 1 FROM b_cash
-			WHERE 1=1
-			AND b_cash_room = #{room_id}
-			AND (
+		SELECT 1 FROM b_cash
+		WHERE 1=1
+		AND b_cash_room = #{room_id}
+		AND (
 			<![CDATA[
 				(b_cash_check_in_date <= #{startDate} AND b_cash_check_out_date > #{startDate})
 				OR (b_cash_check_in_date < #{endDate} AND b_cash_check_out_date >= #{endDate})
 				OR (b_cash_check_in_date >= #{startDate} AND b_cash_check_out_date <= #{endDate})
 			]]>
-			)
-		    
-		    UNION ALL
-		    
-		    SELECT 1 FROM b_com
-			WHERE 1=1
-			AND b_com_room = #{room_id}
-			AND (
+		)
+
+		UNION ALL
+
+		SELECT 1 FROM b_com
+		WHERE 1=1
+		AND b_com_room = #{room_id}
+		AND (
 			<![CDATA[
 				(b_com_check_in_date <= #{startDate} AND b_com_check_out_date > #{startDate})
 				OR (b_com_check_in_date < #{endDate} AND b_com_check_out_date >= #{endDate})
 				OR (b_com_check_in_date >= #{startDate} AND b_com_check_out_date <= #{endDate})
 			]]>
-			)
-		    
-		    UNION ALL
-		    
-		    SELECT 1 FROM b_apco
-			WHERE 1=1
-			AND b_apco_room = #{room_id}
-			AND (
+		)
+
+		UNION ALL
+
+		SELECT 1 FROM b_apco
+		WHERE 1=1
+		AND b_apco_room = #{room_id}
+		AND (
 			<![CDATA[
 				(b_apco_check_in_date <= #{startDate} AND b_apco_check_out_date > #{startDate})
 				OR (b_apco_check_in_date < #{endDate} AND b_apco_check_out_date >= #{endDate})
 				OR (b_apco_check_in_date >= #{startDate} AND b_apco_check_out_date <= #{endDate})
 			]]>
-			)
+		)
 		) AS availability_check
-    </select>
-	
-	
-	
-	
+	</select>
+
+
+
+
 </mapper>

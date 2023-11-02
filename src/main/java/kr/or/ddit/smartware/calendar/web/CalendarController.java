@@ -1,24 +1,48 @@
 package kr.or.ddit.smartware.calendar.web;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.util.IOUtils;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -153,6 +177,8 @@ public class CalendarController {
 			calendar.setEndDate(now.plusWeeks(1).format(formatter));
 		}
 
+		logger.debug("calendar :" + calendar);
+		
 		List<Calendar> excelList = calendarService.getAllExcelList(calendar);
 		model.addAttribute("excelList", excelList);
 
@@ -398,7 +424,7 @@ public class CalendarController {
 		calendarService.insertNewCalendar(calendar);
 
 		try {
-			String pathToExecutable = "C:\\PycharmWS\\AccommodationReservation\\dist\\cashBlock.exe";
+			String pathToExecutable = "C:/PycharmWS/AccommodationReservation/dist/cashUnblock.exe";
 
 			System.out.println("calendar.getRoom_id() = " + calendar.getRoom_id());
 			System.out.println("start.substring(0, 10) = " + start.substring(0, 10));
@@ -472,6 +498,52 @@ public class CalendarController {
 
 		// Perform the update
 		calendarService.updateNewCalendar(calendar);
+		
+		try {
+			String pathToExecutable = "C:/PycharmWS/AccommodationReservation/dist/cashUnblock.exe";
+
+			System.out.println("calendar.getRoom_id() = " + calendar.getRoom_id());
+			System.out.println("start.substring(0, 10) = " + start.substring(0, 10));
+			System.out.println("end.substring(0, 10) = " + end.substring(0, 10));
+			System.out.println("calendar.getbApcoKey() = " + calendar.getbApcoKey());
+
+			String[] cmdArray = {
+			    pathToExecutable, 
+			    encodeToUTF8(calendar.getRoom_id()),
+			    start.substring(0, 10),
+			    end.substring(0, 10),
+			    calendar.getbApcoKey()
+			};
+
+			ProcessBuilder processBuilder = new ProcessBuilder(cmdArray);
+			processBuilder.redirectErrorStream(true);
+			Process process = processBuilder.start();
+
+			try (BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"))) {
+			    // 프로그램의 표준 출력 읽기
+			    System.out.println("Standard output:");
+			    String s;
+			    while ((s = stdInput.readLine()) != null) {
+			        System.out.println(s);
+			    }
+			}
+
+			int exitCode = process.waitFor();
+			if (exitCode == 0) {
+			    System.out.println("Program executed successfully");
+			} else {
+			    System.out.println("Program exited with error code: " + exitCode);
+			}
+
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Failed to execute program");
+		}
+		
+		
+		
 
 		return jsonView;
 	}
@@ -484,8 +556,51 @@ public class CalendarController {
 	 * @return Method 설명 : 일정 삭제
 	 */
 	@PostMapping("deleteNewCalendar")
-	public View deleteNewCalendar(Model model, Calendar calendar) {
+	public View deleteNewCalendar(Model model, Calendar calendar, String start, String end) {
 		calendarService.deleteNewCalendar(calendar);
+		
+		
+		try {
+			String pathToExecutable = "C:/PycharmWS/AccommodationReservation/dist/cashUnblock.exe";
+
+			System.out.println("calendar.getRoom_id() = " + calendar.getRoom_id());
+			System.out.println("start.substring(0, 10) = " + start.substring(0, 10));
+			System.out.println("end.substring(0, 10) = " + end.substring(0, 10));
+
+			String[] cmdArray = {
+			    pathToExecutable, 
+			    encodeToUTF8(calendar.getRoom_id()),
+			    start.substring(0, 10),
+			    end.substring(0, 10),
+			    calendar.getbApcoKey()
+			};
+
+			ProcessBuilder processBuilder = new ProcessBuilder(cmdArray);
+			processBuilder.redirectErrorStream(true);
+			Process process = processBuilder.start();
+
+			try (BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"))) {
+			    // 프로그램의 표준 출력 읽기
+			    System.out.println("Standard output:");
+			    String s;
+			    while ((s = stdInput.readLine()) != null) {
+			        System.out.println(s);
+			    }
+			}
+
+			int exitCode = process.waitFor();
+			if (exitCode == 0) {
+			    System.out.println("Program executed successfully");
+			} else {
+			    System.out.println("Program exited with error code: " + exitCode);
+			}
+
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Failed to execute program");
+		}
 
 		return jsonView;
 	}
@@ -523,5 +638,203 @@ public class CalendarController {
 
 		return jsonView;
 	}
+	
+	
+	@RequestMapping("excelDown")
+	public void excelDown(Model model
+			, Calendar calendar
+			, HttpServletRequest request
+			, HttpServletResponse response
+			, HttpSession session) throws Exception { 
+
+		List<String> rooms = Arrays.asList("#2", "#3", "#4", "#5");
+        List<String> dateRange = getDateRange(calendar.getStartDate(), calendar.getEndDate());
+		List<Calendar> excelList = calendarService.getAllExcelList(calendar);	
+		
+		logger.debug("excelList.size(" + excelList.size());
+		
+		String dateString = calendar.getStartDate();
+        SimpleDateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat targetFormat = new SimpleDateFormat("yyyy-MM");
+        String formattedDate = "";
+        try {
+            Date date = originalFormat.parse(dateString);
+            formattedDate = targetFormat.format(date);
+            System.out.println(formattedDate);  // Output: 2023-11
+        } catch (ParseException e) {
+            System.out.println("날짜 형식이 잘못되었습니다.");
+        }
+		String fileName = formattedDate + "_예약 목록.xls";
+		
+		try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Reservations");
+            Font font = workbook.createFont();
+            font.setColor(IndexedColors.BLACK.getIndex());
+            
+            
+            // 헤더 스타일 생성
+            XSSFCellStyle headerStyle = (XSSFCellStyle) workbook.createCellStyle();
+            headerStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(211, 211, 211))); // 연한회색
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            headerStyle.setFont(font);
+           
+
+            // 데이터 스타일 생성
+            XSSFCellStyle greenStyle = (XSSFCellStyle) workbook.createCellStyle();
+            greenStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(0, 255, 0))); // 초록색
+            greenStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            greenStyle.setFont(font);
+
+            XSSFCellStyle yellowStyle = (XSSFCellStyle) workbook.createCellStyle();
+            yellowStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(255, 255, 0))); // 노란색
+            yellowStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            yellowStyle.setFont(font);
+            
+
+            XSSFCellStyle pinkStyle = (XSSFCellStyle) workbook.createCellStyle();
+            pinkStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(255, 182, 193))); // 핑크색
+            pinkStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            pinkStyle.setFont(font);
+
+            XSSFCellStyle blueStyle = (XSSFCellStyle) workbook.createCellStyle();
+            blueStyle.setFillForegroundColor(new XSSFColor(new java.awt.Color(173, 216, 230))); // 파란색
+            blueStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            blueStyle.setFont(font);
+            
+            CellStyle currencyStyle = workbook.createCellStyle();
+            DataFormat df = workbook.createDataFormat();
+            currencyStyle.setDataFormat(df.getFormat("#,##0"));
+            
+            
+            // 헤더 생성
+            String[] headers = {"날짜", "구분", "예약채널", "이름", "인원", "바베큐", "예약금액", "전화번호", "예약 시점(일자)", "예약 시점(시간)", "비고"};
+            Row headerRow = sheet.createRow(0);
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+                cell.setCellStyle(headerStyle);
+            }
+
+        	// 데이터 쓰기
+            int rowNum = 1;
+            for (String date : dateRange) {
+                for (int rIndex = 0; rIndex < rooms.size(); rIndex++) {
+                    String room = rooms.get(rIndex);
+
+                    List<Calendar> filteredReservations = excelList.stream()
+                            .filter(reservation -> reservation.getbApcoRoom().equals(room) &&
+                                    reservation.getReservation_date().equals(date) &&
+                                    date.compareTo(reservation.getbApcoCheckOutDate()) < 0)
+                            .collect(Collectors.toList());
+                    
+                    
+                    
+                    
+
+                    Row row = sheet.createRow(rowNum++);
+                    if (rIndex == 0) {
+                        Cell dateCell = row.createCell(0);
+                        dateCell.setCellValue(date);
+                        sheet.addMergedRegion(new CellRangeAddress(rowNum - 1, rowNum + rooms.size() - 2, 0, 0));
+                    }
+
+                    if (!filteredReservations.isEmpty()) {
+                        Calendar reservation = filteredReservations.get(0);
+                        
+                        // 문자열을 숫자로 변환
+                        long number = Long.parseLong(reservation.getbApcoPayment());
+                        
+                        // 숫자를 통화 형식으로 포맷
+                        DecimalFormat formatter = new DecimalFormat("#,###");
+                        String formattedNumber = formatter.format(number);
+                        
+                        row.createCell(1).setCellValue(room);
+                        
+                        CellStyle style;
+                        
+                        switch (reservation.getbApcoChannel()) {
+                        case "네이버":
+                            style = greenStyle;
+                            break;
+                        case "현금":
+                            style = yellowStyle;
+                            break;
+                        case "에어":
+                            style = pinkStyle;
+                            break;
+                        case "공실":
+                            style = blueStyle;
+                            break;
+                        default:
+                            style = null;
+	                    }
+                        
+                        Cell cell2 = row.createCell(2);
+                        cell2.setCellValue(reservation.getbApcoChannel());
+                        cell2.setCellStyle(style);
+                        
+                        row.createCell(3).setCellValue(reservation.getbApcoName());
+                        row.createCell(4).setCellValue(reservation.getbApcoPerson());
+                        row.createCell(5).setCellValue(reservation.getBarbecueStatus());
+                        
+                    	Cell cell6 = row.createCell(6);
+                        cell6.setCellValue("￦ "+formattedNumber);
+                        cell6.setCellStyle(currencyStyle);
+                        
+                        row.createCell(7).setCellValue(reservation.getbApcoHp());
+                        row.createCell(8).setCellValue(reservation.getbApcoBooDate());
+                        row.createCell(9).setCellValue(reservation.getbApcoBooTime());
+                        row.createCell(10).setCellValue(reservation.getbApcoEtc());
+                    } else {
+                        row.createCell(1).setCellValue(room);
+                        Cell cell2 = row.createCell(2);
+                        cell2.setCellValue("공실");
+                        cell2.setCellStyle(blueStyle);
+                        // 나머지 셀은 비워둡니다.
+                    }
+                }
+            }
+
+            try {
+
+                try (InputStream is = new FileInputStream(new File("reservations.xlsx"))) {
+                    response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                    response.setHeader("Content-Disposition", "attachment; filename=reservations.xlsx");
+                    workbook.write(response.getOutputStream());
+                    response.flushBuffer();
+                    
+                } catch (IOException e) {
+                    logger.error("파일 전송 중 오류 발생", e);
+                    throw e;
+                }
+                
+            } catch (Exception e) {
+                logger.error("Excel 파일 생성 중 오류 발생", e);
+                throw e;
+            }
+        }
+		
+		
+	}
+	
+	
+	private List<String> getDateRange(String startDate, String endDate) {
+        List<String> dateRange = new ArrayList<>();
+
+        // 날짜 포맷 설정
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        // 시작 날짜와 종료 날짜 파싱
+        LocalDate start = LocalDate.parse(startDate, formatter);
+        LocalDate end = LocalDate.parse(endDate, formatter);
+
+        // 시작 날짜부터 종료 날짜까지 반복하며 리스트에 추가
+        while (!start.isAfter(end)) {
+            dateRange.add(start.format(formatter));
+            start = start.plusDays(1);
+        }
+
+        return dateRange;
+    }
 
 }

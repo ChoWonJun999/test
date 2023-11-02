@@ -384,9 +384,14 @@ var picker = tui.DatePicker.createRangePicker({
         container: '#endpicker-container'
     },
     type: 'date',
-    format: 'yyyy-MM-dd',
-    onChange: function() {
-        var startDate = picker.getStartDate();
+    format: 'yyyy-MM-dd'
+});
+
+
+picker._startpicker.on('afterSelect', function() {
+    console.log("aaaaa");
+    var startDate = picker.getStartDate();
+    if (startDate) {
         var endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 1);
         picker.setEndDate(endDate);

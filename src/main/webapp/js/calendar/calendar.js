@@ -1,7 +1,7 @@
 $(function() {
 	// 하루 종일 버튼을 클릭했을 때
 	$("#allDay").on("click", changeAllDay);
-
+	
 	// 일정 INSERT
 	$("#btnInsertCalendar").on(
 			"click",
@@ -224,9 +224,27 @@ $(function() {
 							cancelButtonText : '아니오'
 						}).then(function(result) {
 					if (result.value) {
+						
+						
+						var startDate = picker._startpicker.getDate();
+						var endDate = picker._endpicker.getDate();
+
+						// 날짜를 UTC 시간대로 변환
+						var utcStartDate = new Date(Date.UTC(startDate.getFullYear(),
+								startDate.getMonth(), startDate.getDate(), startDate
+										.getHours(), startDate.getMinutes(), startDate
+										.getSeconds()));
+						var utcEndDate = new Date(Date.UTC(endDate.getFullYear(),
+								endDate.getMonth(), endDate.getDate(), endDate
+										.getHours(), endDate.getMinutes(), endDate
+										.getSeconds()));
+						
+						
 						$.ajax({
 							url : cp + "/deleteNewCalendar",
-							data : $("#calendarForm").serialize(),
+							data : $("#calendarForm").serialize() + "&start="
+									+ utcStartDate.toISOString() + "&end="
+									+ utcEndDate.toISOString(),
 							type : "post",
 							success : function(data) {
 								$("#calendarModal").modal("hide");
@@ -280,8 +298,7 @@ var selectDate = function(info) {
 
 	// room 초기화
 	$("#roomList").empty();
-	$
-			.getJSON(cp + "/getRoomList")
+	$.getJSON(cp + "/getRoomList")
 			.done(
 					function(datas) { // 개인 일정
 						var res = "<option value='' selected disabled hidden>==선택하세요==</option>";
@@ -295,8 +312,7 @@ var selectDate = function(info) {
 
 	// 카테고리 초기화
 	$("#categoryList").empty();
-	$
-			.getJSON(cp + "/getEmpCategoryList")
+	$.getJSON(cp + "/getEmpCategoryList")
 			.done(
 					function(datas) { // 개인 일정
 						var res = "<option value='' selected disabled hidden>==선택하세요==</option>";
@@ -349,7 +365,7 @@ var selectEvent = function(info) {
 
 	$("#bApcoName").val(info.event.extendedProps.bApcoName);
 	$("#bApcoHp").val(info.event.extendedProps.bApcoHp);
-	$("#bApcoPayment").val(info.event.extendedProps.bApcoPayment);
+	$("#bApcoPayment").val(addCommas(info.event.extendedProps.bApcoPayment));
 	$("#bApcoEtc").val(info.event.extendedProps.bApcoEtc);
 	$("#bApcoPerson").val(info.event.extendedProps.bApcoPerson);
 	$("#gubun").val(info.event.extendedProps.gubun);
@@ -358,8 +374,7 @@ var selectEvent = function(info) {
 
 	// room 초기화
 	$("#roomList").empty();
-	$
-			.getJSON(cp + "/getRoomList")
+	$.getJSON(cp + "/getRoomList")
 			.done(
 					function(datas) { // 개인 일정
 						var res = "<option value='' selected disabled hidden>==선택하세요==</option>";
@@ -381,8 +396,7 @@ var selectEvent = function(info) {
 
 	// 카테고리 초기화
 	$("#categoryList").empty();
-	$
-			.getJSON(cp + "/getEmpCategoryList")
+	$.getJSON(cp + "/getEmpCategoryList")
 			.done(
 					function(datas) { // 개인 일정
 						var res = "<option value='' selected disabled hidden>==선택하세요==</option>";
@@ -459,3 +473,6 @@ var changeAllDay = function() {
 		$(picker._endpicker._timePicker._container).show();
 	}
 }
+
+
+

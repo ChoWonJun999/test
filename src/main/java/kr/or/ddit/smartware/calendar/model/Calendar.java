@@ -43,6 +43,7 @@ public class Calendar {
 	private String bApcoCheckInDateMonth ;
 	private String startDate;
 	private String endDate;
+	private String reservation_date		;
 	
 	
 	
@@ -66,7 +67,12 @@ public class Calendar {
 	
 	
 	
-	
+	public String getReservation_date() {
+		return reservation_date;
+	}
+	public void setReservation_date(String reservation_date) {
+		this.reservation_date = reservation_date;
+	}
 	public String getbApcoCheckInDateMonth() {
 		return bApcoCheckInDateMonth;
 	}
