@@ -169,4 +169,12 @@ public class CalendarDao implements ICalendarDao {
 		return sqlSession.selectOne("calendar.checkAvailability", map);
 	}
 
+	/* (non-Javadoc)
+	 * @see kr.or.ddit.smartware.calendar.repository.ICalendarDao#systemLogList()
+	 */
+	@Override
+	public List<Map<String, String>> systemLogList() {
+		return sqlSession.selectList("calendar.systemLogList");
+	}
+
 }

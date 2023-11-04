@@ -15,6 +15,11 @@
                     <i class="icon-grid menu-icon"></i><span class="nav-text">일정 관리(엑셀)</span>
                 </a>
             </li>
+            <li>
+                <a href="${cp }/log" aria-expanded="false">
+                    <i class="fa fa-list-alt menu-icon"></i><span class="nav-text">시스템 로그</span>
+                </a>
+            </li>
         </ul>
     </div>
 </div>

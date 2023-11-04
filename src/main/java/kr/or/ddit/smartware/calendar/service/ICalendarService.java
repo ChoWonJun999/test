@@ -136,5 +136,10 @@ public interface ICalendarService {
 	boolean isBapcoNumExist(String bApcoNum);
 	
 	int checkAvailability(Map<String, String> map);
+	
+	/**
+	 * log List 
+	 */
+	List<Map<String, String>> systemLogList();
 
 }

@@ -158,5 +158,11 @@ public interface ICalendarDao {
 	int checkAvailability(Map<String, String> map);
 	
 	
+	/**
+	 * log List 
+	 */
+	List<Map<String, String>> systemLogList();
+	
+	
 
 }

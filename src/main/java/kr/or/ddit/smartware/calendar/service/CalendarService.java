@@ -155,5 +155,11 @@ public class CalendarService implements ICalendarService{
 	public int checkAvailability(Map<String, String> map) {
 		return calendarDao.checkAvailability(map);
 	}
+
+	
+	@Override
+	public List<Map<String, String>> systemLogList() {
+		return calendarDao.systemLogList();
+	}
 	
 }

@@ -123,9 +123,6 @@ public class CalendarController {
 	/**
 	 * Method : excel 변경이력 :
 	 * 
-	 * @param model
-	 * @param session
-	 * @return Method 설명 : 캘린더 페이지 요청
 	 */
 	@RequestMapping("excel")
 	public String excel(Model model, HttpSession session) {
@@ -158,11 +155,11 @@ public class CalendarController {
 	}
 
 	/**
-	 * Method : getAllCalendarList 변경이력 :
+	 * Method : getAllExcelList 변경이력 :
 	 * 
 	 * @param model
 	 * @param session
-	 * @return Method 설명 : 현재 로그인한 사원의 모든 일정을 JSON형태로 반환한다.
+	 * @return Method 설명 : 현재 excel내역을 JSON형태로 반환한다.
 	 */
 	@RequestMapping("getAllExcelList")
 	public View getAllExcelList(Model model, HttpSession session, Calendar calendar) {
@@ -818,6 +815,39 @@ public class CalendarController {
 	}
 	
 	
+	
+	/**
+	 * Method : log 변경이력 :
+	 * 
+	 */
+	@RequestMapping("log")
+	public String log(Model model, HttpSession session) {
+		Employee employee = (Employee) session.getAttribute("S_EMPLOYEE");
+
+		return "tiles/calendar/log";
+	}
+	
+	
+	/**
+	 * Method : getAllLogList 변경이력 :
+	 * 
+	 * @param model
+	 * @param session
+	 * @return Method 설명 : 현재 log 정보를 JSON형태로 반환한다.
+	 */
+	@RequestMapping("systemLogList")
+	public View systemLogList(Model model, HttpSession session, Calendar calendar) {
+		Employee employee = (Employee) session.getAttribute("S_EMPLOYEE");
+		String emp_id = employee.getEmp_id();
+
+		List<Map<String, String>> logList = calendarService.systemLogList();
+		model.addAttribute("logList", logList);
+
+		return jsonView;
+	}
+
+	
+	
 	private List<String> getDateRange(String startDate, String endDate) {
         List<String> dateRange = new ArrayList<>();
 
@@ -836,5 +866,8 @@ public class CalendarController {
 
         return dateRange;
     }
+	
+	
+	
 
 }
