@@ -686,6 +686,13 @@
 	<select id="systemLogList" resultType="map">
 		SELECT 
 			concat('[', `log_date`, '] ', log_text) as log_text 
+			,
+			(
+			 CASE 
+				WHEN (log_text LIKE '%에러%' OR log_text LIKE '%실패%') THEN 'T'
+				ELSE 'F'
+			  END
+			) AS gubun  
 		FROM `log`
 		ORDER BY `log_date` DESC
 		LIMIT 100;

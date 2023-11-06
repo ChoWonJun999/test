@@ -48,9 +48,13 @@
         var tbodyContent = "";
 		
 		$.each(data, function(index, log) {
-				console.log(log);
+				var color = "";
+				if(log.gubun == 'T' ){
+					color = "style=color:red";
+				}
+				
 		        var row = '<tr>';
-	            row += '<td>' + log.log_text + '</td>';
+	            row += '<td '+color+'>' + log.log_text + '</td>';
 		        row += '</tr>';
 		        
 		        tbodyContent += row;

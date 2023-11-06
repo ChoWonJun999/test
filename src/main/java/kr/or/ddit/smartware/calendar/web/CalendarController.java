@@ -421,7 +421,7 @@ public class CalendarController {
 		calendarService.insertNewCalendar(calendar);
 
 		try {
-			String pathToExecutable = "C:/PycharmWS/AccommodationReservation/dist/cashUnblock.exe";
+			String pathToExecutable = "C:/Users/Administrator/Desktop/pythonExe/cashBlock.exe";
 
 			System.out.println("calendar.getRoom_id() = " + calendar.getRoom_id());
 			System.out.println("start.substring(0, 10) = " + start.substring(0, 10));
@@ -445,15 +445,6 @@ public class CalendarController {
 			ProcessBuilder processBuilder = new ProcessBuilder(cmdArray);
 			processBuilder.redirectErrorStream(true);
 			Process process = processBuilder.start();
-
-			try (BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"))) {
-			    // 프로그램의 표준 출력 읽기
-			    System.out.println("Standard output:");
-			    String s;
-			    while ((s = stdInput.readLine()) != null) {
-			        System.out.println(s);
-			    }
-			}
 
 			int exitCode = process.waitFor();
 			if (exitCode == 0) {
@@ -497,7 +488,7 @@ public class CalendarController {
 		calendarService.updateNewCalendar(calendar);
 		
 		try {
-			String pathToExecutable = "C:/PycharmWS/AccommodationReservation/dist/cashUnblock.exe";
+			String pathToExecutable = "C:/Users/Administrator/Desktop/pythonExe/cashChangeData.exe";
 
 			System.out.println("calendar.getRoom_id() = " + calendar.getRoom_id());
 			System.out.println("start.substring(0, 10) = " + start.substring(0, 10));
@@ -515,15 +506,6 @@ public class CalendarController {
 			ProcessBuilder processBuilder = new ProcessBuilder(cmdArray);
 			processBuilder.redirectErrorStream(true);
 			Process process = processBuilder.start();
-
-			try (BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream(), "UTF-8"))) {
-			    // 프로그램의 표준 출력 읽기
-			    System.out.println("Standard output:");
-			    String s;
-			    while ((s = stdInput.readLine()) != null) {
-			        System.out.println(s);
-			    }
-			}
 
 			int exitCode = process.waitFor();
 			if (exitCode == 0) {
@@ -558,7 +540,7 @@ public class CalendarController {
 		
 		
 		try {
-			String pathToExecutable = "C:/PycharmWS/AccommodationReservation/dist/cashUnblock.exe";
+			String pathToExecutable = "C:/Users/Administrator/Desktop/pythonExe/cashUnblock.exe";
 
 			System.out.println("calendar.getRoom_id() = " + calendar.getRoom_id());
 			System.out.println("start.substring(0, 10) = " + start.substring(0, 10));
@@ -794,16 +776,16 @@ public class CalendarController {
 
             try {
 
-                try (InputStream is = new FileInputStream(new File("reservations.xlsx"))) {
+//                try (InputStream is = new FileInputStream(new File("reservations.xlsx"))) {
                     response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
                     response.setHeader("Content-Disposition", "attachment; filename=reservations.xlsx");
                     workbook.write(response.getOutputStream());
                     response.flushBuffer();
                     
-                } catch (IOException e) {
-                    logger.error("파일 전송 중 오류 발생", e);
-                    throw e;
-                }
+//                } catch (IOException e) {
+//                    logger.error("파일 전송 중 오류 발생", e);
+//                    throw e;
+//                }
                 
             } catch (Exception e) {
                 logger.error("Excel 파일 생성 중 오류 발생", e);
