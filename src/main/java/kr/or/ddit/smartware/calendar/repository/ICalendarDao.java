@@ -161,7 +161,9 @@ public interface ICalendarDao {
 	/**
 	 * log List 
 	 */
-	List<Map<String, String>> systemLogList();
+	List<Map<String, String>> systemLogList(Map<String, Object> map);
+	List<Map<String, String>> systemLogAllList(Map<String, Object> map);
+	
 	
 	
 

@@ -364,6 +364,7 @@ public class CalendarController {
 		for (Calendar calendar : calendarService.getAllCrawlingCalendarList(pCalendar)) {
 			calendarList.add(calendarJson(calendar));
 		}
+		System.out.println("calendarList : " + calendarList);
 
 		model.addAttribute("calendarList", calendarList);
 
@@ -818,12 +819,32 @@ public class CalendarController {
 	 * @return Method 설명 : 현재 log 정보를 JSON형태로 반환한다.
 	 */
 	@RequestMapping("systemLogList")
-	public View systemLogList(Model model, HttpSession session, Calendar calendar) {
+	public View systemLogList(Model model, @RequestParam(name = "page", defaultValue = "1") Integer page,
+			 							   @RequestParam(name = "pagesize", defaultValue = "150") Integer pagesize,	HttpSession session, Calendar calendar) {
 		Employee employee = (Employee) session.getAttribute("S_EMPLOYEE");
 		String emp_id = employee.getEmp_id();
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		map.put("startDate", calendar.getStartDate());
+		map.put("endDate", calendar.getEndDate());
+		map.put("page", page);
+		map.put("pagesize", pagesize);
+		System.out.println("map : " + map);
 
-		List<Map<String, String>> logList = calendarService.systemLogList();
+		List<Map<String, String>> logList = calendarService.systemLogList(map);
+		System.out.println("logList : " + logList);
 		model.addAttribute("logList", logList);
+		
+		List<Map<String, String>> pageList = calendarService.systemLogAllList(map);
+		System.out.println("pageList.size : " + pageList.size());
+		
+		int paginationSize = (int) Math.ceil((double) pageList.size() / pagesize);
+		logger.debug("paginationSize {}", paginationSize);
+		
+		model.addAttribute("page", page);
+		model.addAttribute("pagesize", pagesize);
+		model.addAttribute("paginationSize", paginationSize);
 
 		return jsonView;
 	}

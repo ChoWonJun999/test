@@ -173,8 +173,13 @@ public class CalendarDao implements ICalendarDao {
 	 * @see kr.or.ddit.smartware.calendar.repository.ICalendarDao#systemLogList()
 	 */
 	@Override
-	public List<Map<String, String>> systemLogList() {
-		return sqlSession.selectList("calendar.systemLogList");
+	public List<Map<String, String>> systemLogList(Map<String, Object> map) {
+		return sqlSession.selectList("calendar.systemLogList", map);
+	}
+
+	@Override
+	public List<Map<String, String>> systemLogAllList(Map<String, Object> map) {
+		return sqlSession.selectList("systemLogAllList", map);
 	}
 
 }

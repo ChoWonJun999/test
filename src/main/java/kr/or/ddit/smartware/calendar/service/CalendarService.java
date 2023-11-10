@@ -158,8 +158,14 @@ public class CalendarService implements ICalendarService{
 
 	
 	@Override
-	public List<Map<String, String>> systemLogList() {
-		return calendarDao.systemLogList();
+	public List<Map<String, String>> systemLogList(Map<String, Object> map) {
+		return calendarDao.systemLogList(map);
+	}
+
+	
+	@Override
+	public List<Map<String, String>> systemLogAllList(Map<String, Object> map) {
+		return calendarDao.systemLogAllList(map);
 	}
 	
 }

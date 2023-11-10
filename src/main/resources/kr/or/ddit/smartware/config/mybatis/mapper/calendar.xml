@@ -683,8 +683,8 @@
 	</select>
 	
 	
-	<select id="systemLogList" resultType="map">
-		SELECT 
+	<select id="systemLogList" parameterType="map" resultType="map">
+		<!-- SELECT 
 			concat('[', `log_date`, '] ', log_text) as log_text 
 			,
 			(
@@ -694,9 +694,40 @@
 			  END
 			) AS gubun  
 		FROM `log`
-		ORDER BY `log_date` DESC
-		LIMIT 100;
+		WHERE 1=1
+		AND 
+		<![CDATA[
+		  `log_date` >= #{startDate} AND 
+		  `log_date` < #{endDate}
+		  ]]>
+		ORDER BY `log_date` DESC -->
+		SELECT * FROM (
+	    SELECT 
+	        CONCAT('[', `log_date`, '] ', log_text) AS log_text,
+	        (
+	            CASE 
+	                WHEN (log_text LIKE '%에러%' OR log_text LIKE '%실패%') THEN 'T'
+	                ELSE 'F'
+	            END
+	        ) AS gubun,
+	        ROW_NUMBER() OVER (ORDER BY `log_date` DESC) AS rn
+	    FROM `log`
+	    <![CDATA[
+	   WHERE DATE(`log_date`) >= #{startDate} AND DATE(`log_date`) <= #{endDate}
+	    ]]>
+	) AS PagedLogs
+	WHERE rn BETWEEN #{pagesize} * (#{page} - 1) + 1 AND #{pagesize} * #{page}
+			
+		
+		
 	</select>
-
+	
+	
+	<select id="systemLogAllList" parameterType="map" resultType="map">
+		  SELECT * FROM `log`
+		  <![CDATA[
+		    WHERE DATE(`log_date`) >= #{startDate} AND DATE(`log_date`) <= #{endDate}
+	      ]]>
+	</select>
 
 </mapper>

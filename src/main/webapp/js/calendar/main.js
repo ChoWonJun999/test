@@ -1,6 +1,16 @@
 var calendar;
 
 $(function() {
+	// sessionStorage에서 새로고침 여부를 확인합니다.
+    if (!sessionStorage.getItem('reloaded')) {
+        // 새로고침 표시를 설정합니다.
+        sessionStorage.setItem('reloaded', 'true');
+        
+        // 페이지를 새로고침합니다.
+        location.reload();
+    }
+	
+	
 	var calendarEl = document.getElementById('calendar');
     calendar = new FullCalendar.Calendar(calendarEl, {
     	plugins : [ "dayGrid", "timeGrid", "list", "interaction" ],
@@ -61,6 +71,8 @@ $(function() {
 				    // 3. 날짜를 yyyy-mm-01 형식의 문자열로 포맷합니다.
 				    formattedDate = moment(date).format('YYYY-MM-01');
 			    }
+			    
+			    console.log(formattedDate);
 				
 				$.ajax({
 			          url: cp + "/getAllCrawlingCalendarList",
