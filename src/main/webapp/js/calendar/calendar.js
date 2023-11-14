@@ -75,6 +75,10 @@ $(function() {
 										+ "&start="
 										+ utcStartDate.toISOString() + "&end="
 										+ utcEndDate.toISOString(),
+							    beforeSend: function() {
+								        // 로딩 모달 표시
+								        $("#loadingModal").modal("show");
+							    },
 								success : function(data) {
 									$("#calendarModal").modal("hide");
 									Swal({
@@ -86,7 +90,14 @@ $(function() {
 
 									// 캘린더 업데이트
 									calendar.refetchEvents();
-								}
+								},
+							    error: function() {
+							        // 에러 처리...
+							    },
+							    complete: function() {
+							        // 로딩 모달 숨기기
+							        $("#loadingModal").modal("hide");
+							    }
 							});
 						} else {
 							Swal({
@@ -176,6 +187,10 @@ $(function() {
 										+ "&start="
 										+ utcStartDate.toISOString() + "&end="
 										+ utcEndDate.toISOString(),
+								beforeSend: function() {
+							        // 로딩 모달 표시
+							        $("#loadingModal").modal("show");
+							    },
 								success : function(data) {
 									$("#calendarModal").modal("hide");
 
@@ -188,7 +203,14 @@ $(function() {
 
 									// 캘린더 업데이트
 									calendar.refetchEvents();
-								}
+								},
+							    error: function() {
+							        // 에러 처리...
+							    },
+							    complete: function() {
+							        // 로딩 모달 숨기기
+							        $("#loadingModal").modal("hide");
+							    }
 							});
 						} else {
 							Swal({
@@ -246,6 +268,10 @@ $(function() {
 									+ utcStartDate.toISOString() + "&end="
 									+ utcEndDate.toISOString(),
 							type : "post",
+							beforeSend: function() {
+						        // 로딩 모달 표시
+						        $("#loadingModal").modal("show");
+							},
 							success : function(data) {
 								$("#calendarModal").modal("hide");
 
@@ -257,7 +283,14 @@ $(function() {
 								});
 
 								calendar.refetchEvents();
-							}
+							},
+						    error: function() {
+						        // 에러 처리...
+						    },
+						    complete: function() {
+						        // 로딩 모달 숨기기
+						        $("#loadingModal").modal("hide");
+						    }
 						});
 					}
 				});

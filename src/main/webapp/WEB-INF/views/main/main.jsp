@@ -242,6 +242,20 @@
     </div>
 </div>
 
+
+<div id="loadingModal" class="modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="loader"></div>
+        <p class="loading-text">플랫폼 제어 EXE가 실행중입니다..</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 <!-- moment js -->
 <script src="${cp }/js/moment.js"></script>
 

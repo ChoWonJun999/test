@@ -135,3 +135,51 @@ button:focus {
 .tui-timepicker {
     display: none !important;
 }
+
+
+/* Loading Modal Styles */
+#loadingModal .modal-dialog {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 60px); /* 전체 높이에서 일부를 뺀 값 */
+}
+
+#loadingModal .modal-content {
+    background-color: rgba(0, 0, 0, 0.8); /* Dark background with some transparency */
+    border-radius: 10px;
+    width: 80%;
+    margin-right: 8px;
+    padding: 20px;
+}
+
+#loadingModal .modal-body {
+    text-align: center;
+}
+
+/* Loader CSS */
+.loader {
+    border: 10px solid #f3f3f3; /* Light grey */
+    border-top: 10px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+    margin: 0 auto 20px; /* Center the loader and add space below */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Loading Text Style */
+.loading-text {
+    color: #fff; /* White color for visibility */
+    font-size: 1.2em;
+}
+
+/* Ensure the loading modal is on top of other elements */
+#loadingModal {
+    z-index: 1051; /* Higher than standard Bootstrap modals */
+}
