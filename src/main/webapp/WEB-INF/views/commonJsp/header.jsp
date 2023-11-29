@@ -290,9 +290,10 @@
 			     height: 100%;
 			     line-height: 1; /* 또는 다른 적절한 값 */
 			     color: white;
-			     font-size: 30px;
+			     font-size: 20px; 
+			     margin-top: 4px;
             ">
-                PANTON9
+                PANTON9 예약 관리
             </span>
         </a>
     </div>

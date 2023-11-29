@@ -14,6 +14,7 @@ public class Calendar {
 	private String emp_id;		// 사원 아이디
 	private String category_id; // 카테고리 아이디
 	private String gubun;		// table gubun 값
+	private String searchType;
 	
 	
 	
@@ -66,7 +67,20 @@ public class Calendar {
 	
 	
 	
-	
+	/**
+	 * @return the searchType
+	 */
+	public String getSearchType() {
+		return searchType;
+	}
+
+	/**
+	 * @param searchType the searchType to set
+	 */
+	public void setSearchType(String searchType) {
+		this.searchType = searchType;
+	}
+
 	public String getReservation_date() {
 		return reservation_date;
 	}

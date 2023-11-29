@@ -715,11 +715,16 @@
 	    <![CDATA[
 	   WHERE DATE(`log_date`) >= #{startDate} AND DATE(`log_date`) <= #{endDate}
 	    ]]>
+	    <if test="searchType != null and searchType != ''">
+	        AND (
+	            CASE
+	                WHEN (log_text LIKE '%에러%' OR log_text LIKE '%실패%') THEN 1
+	                ELSE 0
+	            END
+	        ) = 1
+	    </if>
 	) AS PagedLogs
 	WHERE rn BETWEEN #{pagesize} * (#{page} - 1) + 1 AND #{pagesize} * #{page}
-			
-		
-		
 	</select>
 	
 	
@@ -728,6 +733,14 @@
 		  <![CDATA[
 		    WHERE DATE(`log_date`) >= #{startDate} AND DATE(`log_date`) <= #{endDate}
 	      ]]>
+	       <if test="searchType != null and searchType != ''">
+	        AND (
+	            CASE
+	                WHEN (log_text LIKE '%에러%' OR log_text LIKE '%실패%') THEN 1
+	                ELSE 0
+	            END
+	        ) = 1
+	    </if>
 	</select>
 
 </mapper>

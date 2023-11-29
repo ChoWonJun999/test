@@ -16,11 +16,14 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
@@ -345,9 +348,10 @@ public class CalendarController {
 	 * @param model
 	 * @param session
 	 * @return Method 설명 : 현재 로그인한 사원의 모든 일정을 JSON형태로 반환한다.
+	 * @throws ParseException 
 	 */
 	@RequestMapping("getAllCrawlingCalendarList")
-	public View getAllCrawlingCalendarList(Model model, HttpSession session, Calendar pCalendar) {
+	public View getAllCrawlingCalendarList(Model model, HttpSession session, Calendar pCalendar) throws ParseException {
 		Employee employee = (Employee) session.getAttribute("S_EMPLOYEE");
 		String emp_id = employee.getEmp_id();
 
@@ -364,9 +368,46 @@ public class CalendarController {
 		for (Calendar calendar : calendarService.getAllCrawlingCalendarList(pCalendar)) {
 			calendarList.add(calendarJson(calendar));
 		}
-		System.out.println("calendarList : " + calendarList);
+		
+		// 객실, 날짜로 정렬
+		calendarList.sort(Comparator.comparing((Map<String, Object> o) -> (String) o.get("bApcoRoom"))
+                .thenComparing(o -> (String) o.get("bApcoCheckInDate")));
+		
+		
+		List<Map<String, Object>> uniqueList = new ArrayList<>();
+		Map<String, Integer> indexMap = new HashMap<>();
 
-		model.addAttribute("calendarList", calendarList);
+		for (Map<String, Object> entry : calendarList) {
+		    String room = (String) entry.get("bApcoRoom");
+		    String checkInDate = (String) entry.get("bApcoCheckInDate");
+		    String key = room + "_" + checkInDate;
+
+		    if (!indexMap.containsKey(key)) {
+		        indexMap.put(key, uniqueList.size());
+		        uniqueList.add(entry);
+		    } else {
+		        // 중복 발생: uniqueList에서 중복된 항목 제거
+		        int index = indexMap.get(key);
+		        uniqueList.remove(index);
+
+		        // 필요한 값 변경
+		        entry.put("bApcoChannel", "오버부킹");
+		        entry.put("backgroundColor", "#000000");
+		        entry.put("category_id", "4");
+		        entry.put("category_nm", "오버부킹");
+		        entry.put("textColor", "red"); // 기본값 셋팅
+		        // 다른 필드 변경이 필요한 경우 여기에 추가
+
+		        // 변경된 항목을 다시 uniqueList에 추가
+		        uniqueList.add(index, entry);
+		        // 인덱스 맵 업데이트
+		        indexMap.put(key, index);
+		    }
+		}
+		
+
+//		model.addAttribute("calendarList", calendarList);
+		model.addAttribute("calendarList", uniqueList);
 
 		return jsonView;
 	}
@@ -828,6 +869,7 @@ public class CalendarController {
 		
 		map.put("startDate", calendar.getStartDate());
 		map.put("endDate", calendar.getEndDate());
+		map.put("searchType", calendar.getSearchType());
 		map.put("page", page);
 		map.put("pagesize", pagesize);
 		System.out.println("map : " + map);

@@ -38,11 +38,13 @@
 	function reloadData() {
 		var startDate = $('#startDate').val(); // 'YYYY-MM-DD' 형식
 		var endDate = $('#endDate').val(); // 'YYYY-MM-DD' 형식
+		var searchType = $('#searchType').val(); // 검색조건
 
 		$.getJSON(cp + "/systemLogList", {
 			startDate : startDate,
 			endDate : endDate,
-			 page: currentPage // 페이지 번호 추가
+			searchType : searchType,
+			page: currentPage // 페이지 번호 추가
 		}).done(function(data) {
 			mapDataToTable(data.logList);
 			updatePagination(data.page, data.paginationSize);
@@ -117,7 +119,14 @@
 					<div></div>
 					<div class="table-responsive">
 						<H2>SYSTEM LOG [내역]</H2>
+					    
 						<div class="form-group">
+							 <div class="col-auto my-1 align-items-center" style="display: inline-block;">
+	                             <select id="searchType" name="searchType" class="custom-select mr-sm-2" onchange="reloadData()">
+	                                 <option value="">전체</option>
+	                                 <option value="error">오류</option>
+	                             </select>
+	                         </div>
 							<div
 								class="form-control tui-datepicker-input tui-datetime-input tui-has-focus">
 								<input id="startDate" name="startDate" type="text" aria-label="Date"

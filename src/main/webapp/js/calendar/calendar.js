@@ -247,6 +247,9 @@ $(function() {
 						}).then(function(result) {
 					if (result.value) {
 						
+						// disabled 풀기
+						$("#roomList").prop("disabled", false);
+						$("#categoryList").prop("disabled", false);
 						
 						var startDate = picker._startpicker.getDate();
 						var endDate = picker._endpicker.getDate();
@@ -305,12 +308,16 @@ var selectDate = function(info) {
 					"<i class='fa fa-calendar-check-o fa-lg' style='color: black;'> </i> 일정 추가");
 
 	// 일정 초기화
-	$("#bApcoName").val("");
-	$("#bApcoHp").val("");
-	$("#bApcoPayment").val("");
-	$("#bApcoEtc").val("");
-	$("#bApcoPerson").val("");
-	$("#gubun").val("");
+	$("#bApcoName").val("").prop('readOnly', false);
+	$("#bApcoHp").val("").prop('readOnly', false);
+	$("#bApcoPayment").val("").prop('readOnly', false);
+	$("#bApcoEtc").val("").prop('readOnly', false);
+	$("#bApcoPerson").val("").prop('readOnly', false);
+	$("#gubun").val("").prop('readOnly', false);
+	
+	//disabled 설정 풀기
+	$("#roomList").prop("disabled", false);
+	$("#categoryList").prop("disabled", false);
 
 	$("#bApcoKey").val("");
 
@@ -375,7 +382,7 @@ var selectEvent = function(info) {
 	// 모달 셋팅 변경
 	$("#calendarModalTitle")
 			.html(
-					"<i class='fa fa-calendar-check-o fa-lg' style='color: black;'> </i> 일정 수정");
+					"<i class='fa fa-calendar-check-o fa-lg' style='color: black;'> </i> 일정 상세");
 
 	// 날짜 초기화
 	var startDate = moment(info.event.start).format("YYYY-MM-DD HH:mm"); // fullcalendar에서
@@ -396,12 +403,12 @@ var selectEvent = function(info) {
 	 * $("#allDay").prop("checked", info.event.allDay); changeAllDay();
 	 */
 
-	$("#bApcoName").val(info.event.extendedProps.bApcoName);
-	$("#bApcoHp").val(info.event.extendedProps.bApcoHp);
-	$("#bApcoPayment").val(addCommas(info.event.extendedProps.bApcoPayment));
-	$("#bApcoEtc").val(info.event.extendedProps.bApcoEtc);
-	$("#bApcoPerson").val(info.event.extendedProps.bApcoPerson);
-	$("#gubun").val(info.event.extendedProps.gubun);
+	$("#bApcoName").val(info.event.extendedProps.bApcoName).prop('readOnly', true);
+	$("#bApcoHp").val(info.event.extendedProps.bApcoHp).prop('readOnly', true);
+	$("#bApcoPayment").val(addCommas(info.event.extendedProps.bApcoPayment)).prop('readOnly', true);
+	$("#bApcoEtc").val(info.event.extendedProps.bApcoEtc).prop('readOnly', true);
+	$("#bApcoPerson").val(info.event.extendedProps.bApcoPerson).prop('readOnly', true);
+	$("#gubun").val(info.event.extendedProps.gubun).prop('readOnly', true);
 
 	$("#bApcoKey").val(info.event.extendedProps.bApcoKey);
 
@@ -449,11 +456,16 @@ var selectEvent = function(info) {
 						res += "</optgroup>";
 						$("#categoryList").append(res);
 					});
+	
+	//disabled 설정
+	$("#roomList").prop("disabled", true);
+	$("#categoryList").prop("disabled", true);
+	
 
 	// 버튼 초기화
 	$("#btnInsertCalendar").hide();
 	$("#btnDeleteCalendar").show();
-	$("#btnUpdateCalendar").show();
+	$("#btnUpdateCalendar").hide();
 
 	if (info.event.extendedProps.bApcoChannel != "현금") {
 		$("#btnInsertCalendar").hide();
