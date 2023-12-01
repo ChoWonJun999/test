@@ -28,23 +28,6 @@ $(function() {
 		eventLimit : true, // allow "more" link when too many events
 		eventSources: [{ // 이벤트(일정) 추가
 			events: function(info, successCallback, failureCallback) {
-				/*$.ajax({
-					url: cp + "/getAllCrawlingCalendarList",
-					type: "GET",
-					dataType: "json",
-					success: function(data) {
-						var fixedData = data.calendarList.map(function(array) {
-							if(array.allDay && array.start !== array.end) {
-								// 2일 이상의 AllDay인 경우 달력에 하루를 더해야 정상적으로 출력됨.
-								array.end = new Date(moment(array.end).add(1, 'days'));
-							}
-							return array;
-						})
-						successCallback(fixedData);
-					}
-				});*/
-				
-				
 				// 1. fc-center 요소의 텍스트를 가져옵니다.
 			    var text = $('.fc-center h2').text();
 			    var formattedDate = "";
@@ -83,9 +66,6 @@ $(function() {
 			          },
 			          success: function(data) {
 			            var fixedData = data.calendarList.map(function(array) {
-			             /* if (array.allDay && array.start !== array.end) {
-			                array.end = new Date(moment(array.end).add(1, 'days'));
-			              }*/
 			              return array;
 			            })
 			            successCallback(fixedData);
@@ -168,17 +148,12 @@ $(function() {
 		getDisplayCategory(data.categoryList, $("#empCategory"), "emp");
 	});
 	
-	/*// 부서 일정 카테고리 불러오기
-	$.getJSON(cp + "/getDepCategoryList").done(function(data) {
-		getDisplayCategory(data.categoryList, $("#depCategory"), "dep");
-	});*/
+	// 객실 카테고리
+	$.getJSON(cp + "/getRoomList").done(function(data) {
+		getDisplayRoom(data.roomList, $("#depCategory"), "room");
+	});
 	
-	/*// 프로젝트 일정 카테고리 불러오기
-	$.getJSON(cp + "/getProCategoryList").done(function(data) {
-		getDisplayCategory(data.categoryList, $("#proCategory"), "pro");
-	});*/
-	
-	// 카테고리 체크박스 클릭
+	/*// 카테고리 체크박스 클릭
 	$(document).delegate(".categoryList", "click", function() {
 		var iTag = $(this).children("i");
 		
@@ -191,7 +166,21 @@ $(function() {
 		}
 		
 		calendar.rerenderEvents();
+	});*/
+	
+	
+	// 카테고리 체크박스 클릭 이벤트 핸들러
+	$(document).delegate(".categoryList", "click", function() {
+	    toggleCheckboxState(this, "category");
+	    calendar.refetchEvents(); // 필터링 적용을 위해 이벤트 다시 불러오기
 	});
+
+	// 객실 체크박스 클릭 이벤트 핸들러
+	$(document).delegate(".roomList", "click", function() {
+	    toggleCheckboxState(this, "room");
+	    calendar.refetchEvents(); // 필터링 적용을 위해 이벤트 다시 불러오기
+	});
+	
 	
 	// 카테고리 체크박스 전체 선택
 	$(".categoryAll").on("click", function() {
@@ -204,23 +193,29 @@ $(function() {
 			$("#empCategory div.categoryList > i").addClass("fa-square-o off");
 			$("#empCategory div.categoryList > i").removeClass("fa-check-square-o on");
 		} else if(selectedId  === "depCategoryOn") {		// 부서 일정 전체 선택
-			$("#depCategory div.categoryList > i").addClass("fa-check-square-o on");
-			$("#depCategory div.categoryList > i").removeClass("fa-square-o off");
+			$("#depCategory div.roomList > i").addClass("fa-check-square-o on2");
+			$("#depCategory div.roomList > i").removeClass("fa-square-o off2");
 		} else if(selectedId  === "depCategoryOff") {	// 부서 일정 전체 해제
-			$("#depCategory div.categoryList > i").addClass("fa-square-o off");
-			$("#depCategory div.categoryList > i").removeClass("fa-check-square-o on");
-		} else if(selectedId  === "proCategoryOn") {		// 프로젝트 일정 전체 선택
-			$("#proCategory div.categoryList > i").addClass("fa-check-square-o on");
-			$("#proCategory div.categoryList > i").removeClass("fa-square-o off");
-		} else if(selectedId  === "proCategoryOff") {	// 프로젝트 일정 전체 해제
-			$("#proCategory div.categoryList > i").addClass("fa-square-o off");
-			$("#proCategory div.categoryList > i").removeClass("fa-check-square-o on");
-		}
+			$("#depCategory div.roomList > i").addClass("fa-square-o off2");
+			$("#depCategory div.roomList > i").removeClass("fa-check-square-o on2");
+		} 
 		
 		calendar.rerenderEvents();
 	});
 	
 });
+
+
+//체크박스 상태 토글 함수
+function toggleCheckboxState(element, type) {
+	console.log(element);
+    var iTag = $(element).children("i");
+    if(type === "category") {
+        iTag.toggleClass("fa-check-square-o on fa-square-o off");
+    } else if(type === "room") {
+        iTag.toggleClass("fa-check-square-o on2 fa-square-o off2");
+    }
+}
 
 function getDisplayCategory(data, loc, type) {
 	var res = "";
@@ -258,6 +253,29 @@ function getDisplayCategory(data, loc, type) {
 	// 위에서 저장한 HTML태그를 document에 출력
 	loc.append(res);
 }
+
+function getDisplayRoom(data, loc, type) {
+	var res = "";
+	
+	// 카테고리 리스트 출력
+	$.each(data, function(index, entry) {
+		res += "<hr>";
+		res += "<div id=" + entry.room_id + " class='roomList'>"
+		res += "<i class='fa fa-lg fa-check-square-o on2' style='width: 20px;'></i>";
+		res += "<span> " + entry.roomNm + "</span>";
+		res += "<button class='btnCateModify btnCateUpdate'>"
+		res += "<i class='fa fa-lg fa-wrench cateModify'></i>";
+		res += "</button>";
+		res += "<button class='btnCateModify btnCateDelete'>"
+		res += "<i class='fa fa-lg fa-times'></i>";
+		res += "</button>";
+		res += "</div>";
+	});
+	
+	// 위에서 저장한 HTML태그를 document에 출력
+	loc.append(res);
+}
+
 
 // 받아온 시간을 moment.js를 이용하여 포맷에 정의된 형태로 반환
 function getDisplayDate(event) {
@@ -303,7 +321,7 @@ function getDisplayContent(event) {
 }
 
 // 카테고리 체크박스 해제 시 해당 일정이 출력되지 않도록 해주는 함수
-function filtering(event) {
+/*function filtering(event) {
 	// 선택되어 있는 필터의 카테고리아이디들을 맵객체로 저장
 	var checkedCategory = $(".on").map(function () {
 		return $(this).parent().attr("id");
@@ -311,7 +329,26 @@ function filtering(event) {
 	
 	// 맵객체에서 이벤트의 카테고리아이디가 일치하는지를 반환
 	return checkedCategory.indexOf(event.extendedProps.category_id) >= 0;
+}*/
+
+//필터링 함수
+function filtering(event) {
+    var checkedCategories = $(".categoryList .on").map(function() {
+        return $(this).parent().attr("id");
+    }).get();
+
+    var checkedRooms = $(".roomList .on2").map(function() {
+        return $(this).parent().attr("id");
+    }).get();
+
+    /*var categoryMatch = checkedCategories.length === 0 || checkedCategories.indexOf(event.extendedProps.category_id) >= 0;
+    var roomMatch = checkedRooms.length === 0 || checkedRooms.indexOf(event.extendedProps.bApcoRoom) >= 0;*/
+    var categoryMatch = checkedCategories.indexOf(event.extendedProps.category_id) >= 0;
+    var roomMatch = checkedRooms.indexOf(event.extendedProps.bApcoRoom) >= 0;
+
+    return categoryMatch && roomMatch;
 }
+
 
 // 카테고리 추가, 수정 시 색상을 초기화 하기 위한 함수
 function selectColor(color) {
@@ -361,28 +398,6 @@ function settingDate(obj){
 // 컬러셀렉터 표시
 $("#colorselector").colorselector();
 
-// tui.date-picker
-/*var picker = tui.DatePicker.createRangePicker({
-	language: 'ko',
-    startpicker: {
-        date: new Date(),
-        input: '#startpicker-input',
-        container: '#startpicker-container'
-    },
-    endpicker: {
-        date: new Date(),
-        input: '#endpicker-input',
-        container: '#endpicker-container'
-    },
-    type: 'date',
-//    format: 'yyyy-MM-dd HH:mm',
-    format: 'yyyy-MM-dd',
-    timepicker: {
-    	language: 'ko',
-    	showMeridiem: false
-    }
-});*/
-
 var picker = tui.DatePicker.createRangePicker({
     language: 'ko',
     startpicker: {
@@ -401,7 +416,6 @@ var picker = tui.DatePicker.createRangePicker({
 
 
 picker._startpicker.on('afterSelect', function() {
-    console.log("aaaaa");
     var startDate = picker.getStartDate();
     if (startDate) {
         var endDate = new Date(startDate);

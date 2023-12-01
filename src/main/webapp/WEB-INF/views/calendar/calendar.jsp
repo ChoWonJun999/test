@@ -24,7 +24,7 @@
 		<div class="card">
 			<div class="card-body filter" id="empCategory">
 				<i class="fa fa-calendar-check-o fa-2x" style="color: black;"> </i>
-				<h3>예약 일정</h3>
+				<h3>예약 플랫폼</h3>
 				<span id="empCategoryOff" class="categoryAll">
 					<i class="fa fa-2x fa-times-circle-o" aria-hidden="true"></i>
 				</span>
@@ -33,6 +33,19 @@
 				</span>
 			</div>
 		</div>
+		<div class="card">
+			<div class="card-body filter" id="depCategory">
+				<i class="fa fa-calendar-check-o fa-2x" style="color: black;"> </i>
+				<h3>객실</h3>
+				<span id="depCategoryOff" class="categoryAll">
+					<i class="fa fa-2x fa-times-circle-o" aria-hidden="true"></i>
+				</span>
+				<span id="depCategoryOn" class="categoryAll">
+					<i class="fa fa-2x fa-check-circle-o" aria-hidden="true"></i>
+				</span>
+			</div>
+		</div>
+		
 		<!-- <div class="card">
 			<div class="card-body filter" id="depCategory">
 				<i class="fa fa-calendar-check-o fa-2x" style="color: black;"> </i>

@@ -293,7 +293,7 @@
 			     font-size: 20px; 
 			     margin-top: 4px;
             ">
-                PANTON9 예약 관리
+                PENTON9 예약 관리
             </span>
         </a>
     </div>
